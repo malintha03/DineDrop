@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Cart - DineDrop')}"></head>
+
+<style>
+
+    /* ===== iOS 26 GLASS BACKGROUND ===== */
+
+    body.cart-page{
+      min-height:100vh;
+
+      background:
+              linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+              url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+
+      background-size:cover;
+      background-position:center;
+      background-attachment:fixed;
+
+      font-family:"SF Pro Display", sans-serif;
+
+      color:white;
+
+      text-shadow:0 1px 3px rgba(0,0,0,0.45);
+    }
+
+    /* Glow */
+
+    body.cart-page::before,
+    body.cart-page::after{
+      content:'';
+      position:fixed;
+      width:320px;
+      height:320px;
+      border-radius:50%;
+      filter:blur(100px);
+      z-index:0;
+    }
+
+    body.cart-page::before{
+      background:#ff9966;
+      top:-120px;
+      left:-100px;
+      opacity:0.45;
+    }
+
+    body.cart-page::after{
+      background:#6dd5fa;
+      bottom:-120px;
+      right:-100px;
+      opacity:0.4;
+    }
+
+    /* Layer */
+
+    .container{
+      position:relative;
+      z-index:2;
+    }
+
+    /* ===== CART SHELL ===== */
+
+    .cart-shell{
+      padding:40px 0 60px;
+    }
+
+    /* Breadcrumb */
+
+    .cart-breadcrumb{
+      font-size:13px;
+      color:rgba(255,255,255,0.75);
+      margin-bottom:10px;
+    }
+
+    .back-link{
+      color:white;
+      text-decoration:none;
+      opacity:0.8;
+    }
+
+    .back-link:hover{
+      opacity:1;
+    }
+
+    /* Title */
+
+    .cart-title{
+      font-weight:700;
+      letter-spacing:2px;
+      margin-bottom:25px;
+    }
+
+    /* ===== GLASS PANELS ===== */
+
+    .cart-panel{
+
+      background:rgba(20,20,20,0.35);
+
+      backdrop-filter:blur(22px);
+      -webkit-backdrop-filter:blur(22px);
+
+      border:1px solid rgba(255,255,255,0.15);
+
+      border-radius:28px;
+
+      box-shadow:0 8px 32px rgba(0,0,0,0.3);
+
+      color:white;
+    }
+
+    /* Cart item */
+
+    .cart-line{
+      padding:20px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+
+    .cart-line:last-child{
+      border-bottom:none;
+    }
+
+    /* Image */
+
+    .cart-img{
+      width:82px;
+      height:82px;
+      object-fit:cover;
+      border-radius:14px;
+    }
+
+    /* Text */
+
+    .cart-food-name{
+      font-size:16px;
+      font-weight:700;
+      color:white;
+    }
+
+    .cart-meta{
+      font-size:13px;
+      color:rgba(255,255,255,0.75);
+    }
+
+    .cart-price{
+      font-size:18px;
+      font-weight:800;
+      color:white;
+    }
+
+    /* Quantity */
+
+    .cart-qty{
+      display:inline-flex;
+      align-items:center;
+      gap:14px;
+
+      background:rgba(255,255,255,0.12);
+
+      border:1px solid rgba(255,255,255,0.15);
+
+      border-radius:999px;
+
+      padding:6px 14px;
+
+      color:white;
+    }
+
+    .cart-qty button{
+      border:0;
+      background:transparent;
+      color:white;
+      font-size:18px;
+    }
+
+    /* Remove */
+
+    .cart-remove{
+      border:0;
+      background:transparent;
+      color:#ff6b6b;
+      font-size:20px;
+    }
+
+    /* Summary */
+
+    .summary-panel{
+      padding:22px;
+    }
+
+    .summary-title{
+      font-weight:800;
+      margin-bottom:18px;
+    }
+
+    .summary-row{
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:12px;
+      color:rgba(255,255,255,0.75);
+    }
+
+    .summary-row strong{
+      color:white;
+    }
+
+    .summary-total{
+      font-size:20px;
+      font-weight:800;
+    }
+
+    /* Promo */
+
+    .promo-input{
+      background:rgba(255,255,255,0.12);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:999px;
+      padding:10px 14px;
+      color:white;
+    }
+
+    /* Buttons */
+
+    .checkout-btn{
+      background:rgba(255,255,255,0.18);
+      border:1px solid rgba(255,255,255,0.18);
+      color:white;
+      border-radius:999px;
+      padding:12px 20px;
+      font-weight:700;
+      text-decoration:none;
+      display:block;
+      text-align:center;
+      transition:0.3s;
+    }
+
+    .checkout-btn:hover{
+      background:rgba(255,255,255,0.28);
+      color:white;
+    }
+
+    .btn-outline-secondary{
+      border-radius:999px;
+    }
+
+    /* Empty */
+
+    .empty{
+      text-align:center;
+      padding:70px 20px;
+      color:white;
+    }
+
+    .emoji{
+      font-size:60px;
+    }
+
+    /* Responsive */
+
+    @media(max-width:768px){
+
+      .cart-title{
+        font-size:22px;
+      }
+
+      .cart-price{
+        font-size:16px;
+      }
+    }
+
+</style>
+
+<body class="cart-page">
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="cart-shell">
+
+    <div class="container">
+
+        <!-- Breadcrumb -->
+
+        <div class="cart-breadcrumb">
+            <a th:href="@{/}" class="back-link">Home</a> &gt; Cart
+        </div>
+
+        <!-- Title -->
+
+        <h2 class="cart-title">Your Cart</h2>
+
+        <!-- Empty -->
+
+        <div class="empty cart-panel"
+             th:if="${#lists.isEmpty(items)}">
+
+            <div class="emoji">🛒</div>
+
+            <p>Your cart is empty.</p>
+
+            <a th:href="@{/foods}" class="checkout-btn mt-3">
+                Browse Foods
+            </a>
+
+        </div>
+
+        <!-- Cart -->
+
+        <div class="row g-4"
+             th:if="${not #lists.isEmpty(items)}">
+
+            <!-- Items -->
+
+            <div class="col-lg-7">
+
+                <div class="cart-panel">
+
+                    <div class="cart-line"
+                         th:each="c : ${items}"
+                         th:with="food=${foodService.byId(c.foodId)}">
+
+                        <div class="d-flex gap-3 align-items-center">
+
+                            <img class="cart-img"
+                                 th:src="${food != null and food.image != null and !food.image.isEmpty()}
+                                 ? @{'/uploads/' + ${food.image}}
+                                 : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300'">
+
+                            <div class="flex-grow-1">
+
+                                <div class="cart-food-name"
+                                     th:text="${c.foodName}">
+                                    Food
+                                </div>
+
+                                <div class="cart-meta">
+                                    Unit: Rs.
+                                    <span th:text="${#numbers.formatDecimal(c.price,1,2)}"></span>
+                                </div>
+
+                                <div class="cart-price mt-2">
+                                    Rs.
+                                    <span th:text="${#numbers.formatDecimal(c.subtotal,1,2)}"></span>
+                                </div>
+
+                            </div>
+
+                            <div class="text-end d-flex flex-column gap-3">
+
+                                <form th:action="@{'/cart/remove/' + ${c.id}}"
+                                      method="post">
+
+                                    <button class="cart-remove">🗑</button>
+
+                                </form>
+
+                                <form th:action="@{'/cart/update/' + ${c.id}}"
+                                      method="post"
+                                      class="cart-qty">
+
+                                    <button type="submit"
+                                            name="qty"
+                                            th:value="${c.quantity - 1}">
+                                        −
+                                    </button>
+
+                                    <strong th:text="${c.quantity}">1</strong>
+
+                                    <button type="submit"
+                                            name="qty"
+                                            th:value="${c.quantity + 1}">
+                                        +
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Summary -->
+
+            <div class="col-lg-5">
+
+                <div class="cart-panel summary-panel sticky-lg-top"
+                     style="top:92px">
+
+                    <h5 class="summary-title">Order Summary</h5>
+
+                    <div class="summary-row" th:if="${commission != null and commission > 0}">
+                        <span>Food cost</span>
+                        <strong>Rs. <span th:text="${#numbers.formatDecimal(foodCost,1,2)}"></span></strong>
+                    </div>
+                    <div class="summary-row" th:if="${commission != null and commission > 0}">
+                        <span>Website fee</span>
+                        <strong>Rs. <span th:text="${#numbers.formatDecimal(commission,1,2)}"></span></strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <strong>Rs. <span th:text="${#numbers.formatDecimal(subtotal,1,2)}"></span></strong>
+                    </div>
+                    <div class="summary-row" th:if="${discount != null and discount > 0}">
+                        <span>Promo (<span th:text="${appliedCoupon}"></span>)</span>
+                        <strong>- Rs. <span th:text="${#numbers.formatDecimal(discount,1,2)}"></span></strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery</span>
+                        <strong>Rs. <span th:text="${#numbers.formatDecimal(deliveryFee,1,2)}"></span></strong>
+                    </div>
+
+                    <div class="summary-row summary-total">
+                        <span>Total</span>
+                        <strong>Rs. <span th:text="${#numbers.formatDecimal(total,1,2)}"></span></strong>
+                    </div>
+
+                    <form th:action="@{/cart}" method="get" class="d-flex gap-2 my-3">
+                        <input class="promo-input flex-grow-1" name="coupon"
+                               th:value="${appliedCoupon}" placeholder="Promo code">
+                        <button class="btn btn-outline-secondary">Apply</button>
+                    </form>
+                    <div class="small mb-2" th:if="${couponMessage != null and !couponMessage.isEmpty()}"
+                         th:text="${couponMessage}" style="color:rgba(255,255,255,0.85)"></div>
+
+
+                    <a th:href="@{/order/checkout}"
+                       class="checkout-btn">
+
+                        Go to Checkout →
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

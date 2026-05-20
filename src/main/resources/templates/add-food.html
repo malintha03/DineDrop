@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Add Food - DineDrop')}"></head>
+
+<style>
+
+    /* ===== iOS 26 GLASS STYLE ===== */
+
+    body{
+      min-height:100vh;
+
+      background:
+              linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+              url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+
+      background-size:cover;
+      background-position:center;
+      background-attachment:fixed;
+
+      font-family:"SF Pro Display", sans-serif;
+
+      color:white;
+
+      text-shadow:0 1px 3px rgba(0,0,0,0.45);
+    }
+
+    /* Glow */
+
+    body::before,
+    body::after{
+      content:'';
+      position:fixed;
+      width:320px;
+      height:320px;
+      border-radius:50%;
+      filter:blur(100px);
+      z-index:0;
+    }
+
+    body::before{
+      background:#ff9966;
+      top:-120px;
+      left:-100px;
+      opacity:0.45;
+    }
+
+    body::after{
+      background:#6dd5fa;
+      bottom:-120px;
+      right:-100px;
+      opacity:0.4;
+    }
+
+    /* Container layer */
+    .container{
+      position:relative;
+      z-index:2;
+    }
+
+    /* ===== GLASS CARD ===== */
+
+    .auth-card{
+      max-width:640px;
+      margin:60px auto;
+
+      padding:35px;
+
+      background:rgba(20,20,20,0.35);
+
+      backdrop-filter:blur(22px);
+      -webkit-backdrop-filter:blur(22px);
+
+      border:1px solid rgba(255,255,255,0.15);
+
+      border-radius:32px;
+
+      box-shadow:0 8px 32px rgba(0,0,0,0.3);
+
+      color:white;
+    }
+
+    /* Title */
+
+    .auth-card h3{
+      font-weight:700;
+      margin-bottom:25px;
+    }
+
+    .auth-card small{
+      color:rgba(255,255,255,0.75);
+    }
+
+    /* Inputs */
+
+    .form-control{
+      background:rgba(255,255,255,0.10) !important;
+
+      border:1px solid rgba(255,255,255,0.15) !important;
+
+      color:white !important;
+
+      border-radius:14px;
+
+      padding:12px;
+    }
+
+    .form-control::placeholder{
+      color:rgba(255,255,255,0.65);
+    }
+
+    .form-control:focus{
+      box-shadow:none;
+      border-color:rgba(255,255,255,0.35) !important;
+    }
+
+    /* Labels */
+
+    label{
+      font-weight:600;
+      margin-bottom:6px;
+      color:rgba(255,255,255,0.85);
+    }
+
+    /* Button */
+
+    .btn-brand{
+      background:rgba(255,255,255,0.18);
+
+      border:1px solid rgba(255,255,255,0.18);
+
+      color:white !important;
+
+      font-weight:600;
+
+      border-radius:16px;
+
+      padding:12px;
+
+      transition:0.3s;
+    }
+
+    .btn-brand:hover{
+      background:rgba(255,255,255,0.28);
+    }
+
+    /* Row spacing */
+
+    .row{
+      margin-bottom:10px;
+    }
+
+    /* Responsive */
+
+    @media(max-width:768px){
+      .auth-card{
+        margin:30px 15px;
+        padding:25px;
+      }
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container">
+
+    <div class="auth-card">
+
+        <h3>
+            🍔 Add Food
+            <small th:text="'to ' + ${restaurant.name}"></small>
+        </h3>
+
+        <form method="post"
+              th:action="@{'/owner/food/add/' + ${restaurant.id}}"
+              enctype="multipart/form-data">
+
+            <!-- Name -->
+
+            <div class="mb-3">
+
+                <label>Name</label>
+
+                <input class="form-control"
+                       name="name"
+                       required>
+
+            </div>
+
+            <!-- Category + Price -->
+
+            <div class="row">
+
+                <div class="col mb-3">
+
+                    <label>Category</label>
+
+                    <input class="form-control"
+                           name="category"
+                           placeholder="Pizza, Burger..."
+                           required>
+
+                </div>
+
+                <div class="col mb-3">
+
+                    <label>Price (Rs.)</label>
+
+                    <input class="form-control"
+                           type="number"
+                           step="0.01"
+                           name="price"
+                           required>
+
+                </div>
+
+            </div>
+
+            <!-- Description -->
+
+            <div class="mb-3">
+
+                <label>Description</label>
+
+                <textarea class="form-control"
+                          name="description"
+                          rows="2"></textarea>
+
+            </div>
+
+            <!-- Image -->
+
+            <div class="mb-4">
+
+                <label>Image</label>
+
+                <input type="file"
+                       class="form-control"
+                       name="image"
+                       accept="image/*">
+
+            </div>
+
+            <!-- Submit -->
+
+            <button class="btn btn-brand w-100">
+                Add Food
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

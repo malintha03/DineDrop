@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Add Review - DineDrop')}"></head>
+
+<style>
+
+    /* ===== iOS 26 GLASS BACKGROUND ===== */
+
+    body{
+      min-height:100vh;
+
+      background:
+              linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+              url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+
+      background-size:cover;
+      background-position:center;
+      background-attachment:fixed;
+
+      font-family:"SF Pro Display", sans-serif;
+      color:white;
+
+      text-shadow:0 1px 3px rgba(0,0,0,0.45);
+    }
+
+    /* Glow */
+
+    body::before,
+    body::after{
+      content:'';
+      position:fixed;
+      width:320px;
+      height:320px;
+      border-radius:50%;
+      filter:blur(100px);
+      z-index:0;
+    }
+
+    body::before{
+      background:#ff9966;
+      top:-120px;
+      left:-100px;
+      opacity:0.45;
+    }
+
+    body::after{
+      background:#6dd5fa;
+      bottom:-120px;
+      right:-100px;
+      opacity:0.4;
+    }
+
+    /* Layer */
+
+    .container{
+      position:relative;
+      z-index:2;
+    }
+
+    /* ===== GLASS CARD ===== */
+
+    .auth-card{
+
+      max-width:520px;
+
+      margin:80px auto;
+
+      padding:35px;
+
+      background:rgba(20,20,20,0.35);
+
+      backdrop-filter:blur(22px);
+      -webkit-backdrop-filter:blur(22px);
+
+      border:1px solid rgba(255,255,255,0.15);
+
+      border-radius:32px;
+
+      box-shadow:0 8px 32px rgba(0,0,0,0.3);
+
+      color:white;
+    }
+
+    /* ===== 🔥 IMPROVED TITLE ===== */
+
+    .auth-card h3{
+      font-weight:800;
+      font-size:30px;
+      letter-spacing:0.5px;
+
+      color:#ffffff;
+
+      text-shadow:
+              0 2px 10px rgba(0,0,0,0.8),
+              0 0 25px rgba(255,255,255,0.25);
+
+      margin-bottom:8px;
+    }
+
+    /* Text */
+
+    .text-muted{
+      color:rgba(255,255,255,0.70) !important;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    /* Inputs */
+
+    .form-control,
+    .form-select{
+      background:rgba(255,255,255,0.10) !important;
+
+      border:1px solid rgba(255,255,255,0.15) !important;
+
+      color:white !important;
+
+      border-radius:14px;
+
+      padding:12px;
+    }
+
+    .form-select option{
+      color:black;
+    }
+
+    .form-control::placeholder{
+      color:rgba(255,255,255,0.5);
+    }
+
+    .form-control:focus,
+    .form-select:focus{
+      box-shadow:none;
+      border-color:rgba(255,255,255,0.35) !important;
+    }
+
+    /* Labels */
+
+    label{
+      font-weight:600;
+      font-size:14px;
+      color:rgba(255,255,255,0.85);
+      margin-bottom:6px;
+      display:block;
+    }
+
+    /* Button */
+
+    .btn-brand{
+      background:rgba(255,255,255,0.18);
+
+      border:1px solid rgba(255,255,255,0.18);
+
+      color:white !important;
+
+      font-weight:600;
+
+      border-radius:16px;
+
+      padding:12px;
+
+      transition:0.3s;
+    }
+
+    .btn-brand:hover{
+      background:rgba(255,255,255,0.28);
+    }
+
+    /* Restaurant name highlight */
+
+    .text-muted strong{
+      color:#ffffff;
+    }
+
+    /* Responsive */
+
+    @media(max-width:768px){
+      .auth-card{
+        margin:40px 15px;
+        padding:25px;
+      }
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container">
+
+    <div class="auth-card">
+
+        <!-- ⭐ TITLE (NOW CLEAR & STRONG) -->
+        <h3>⭐ Rate your order</h3>
+
+        <!-- Restaurant info -->
+        <p class="text-muted"
+           th:if="${restaurant != null}">
+            From <strong th:text="${restaurant.name}"></strong>
+        </p>
+
+        <form method="post"
+              th:action="@{'/review/add/' + ${order.id}}">
+
+            <!-- Rating -->
+            <div class="mb-3">
+                <label>Rating (1-5)</label>
+                <select class="form-select" name="rating">
+                    <option value="5">★★★★★ Excellent</option>
+                    <option value="4">★★★★ Good</option>
+                    <option value="3">★★★ Okay</option>
+                    <option value="2">★★ Poor</option>
+                    <option value="1">★ Bad</option>
+                </select>
+            </div>
+
+            <!-- Comment -->
+            <div class="mb-3">
+                <label>Comment</label>
+                <textarea class="form-control"
+                          name="comment"
+                          rows="3"
+                          required></textarea>
+            </div>
+
+            <!-- Submit -->
+            <button class="btn btn-brand w-100">
+                Submit Review
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

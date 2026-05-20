@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Rider Dashboard - DineDrop')}"></head>
+
+<style>
+
+  :root{
+    --glass-bg: rgba(20,20,20,0.35);
+    --glass-border: rgba(255,255,255,0.16);
+
+    --text-main:#ffffff;
+    --text-soft:rgba(255,255,255,0.82);
+
+    --blur:blur(20px);
+    --shadow:0 8px 32px rgba(0,0,0,0.28);
+
+    --radius:30px;
+  }
+
+  /* Background */
+
+  body{
+    min-height:100vh;
+
+    background:
+            linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.5)),
+            url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+
+    font-family:"SF Pro Display", sans-serif;
+
+    color:white;
+
+    text-shadow:0 1px 3px rgba(0,0,0,0.4);
+
+    overflow-x:hidden;
+  }
+
+  /* Glow Effects */
+
+  body::before,
+  body::after{
+    content:'';
+    position:fixed;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    filter:blur(90px);
+    z-index:0;
+  }
+
+  body::before{
+    background:#ff9966;
+    top:-100px;
+    left:-80px;
+    opacity:0.45;
+  }
+
+  body::after{
+    background:#6dd5fa;
+    bottom:-120px;
+    right:-100px;
+    opacity:0.4;
+  }
+
+  /* Container */
+
+  .container{
+    position:relative;
+    z-index:2;
+  }
+
+  /* Typography */
+
+  h1,h2,h3,h4,h5{
+    color:white;
+    font-weight:700;
+  }
+
+  .text-muted{
+    color:rgba(255,255,255,0.75) !important;
+  }
+
+  /* Glass Cards */
+
+  .dash-card,
+  .table-glass{
+    background:var(--glass-bg);
+
+    backdrop-filter:var(--blur);
+    -webkit-backdrop-filter:var(--blur);
+
+    border:1px solid var(--glass-border);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+  }
+
+  /* Dashboard Cards */
+
+  .dash-card{
+    padding:24px;
+    text-align:center;
+    transition:0.3s ease;
+  }
+
+  .dash-card:hover{
+    transform:translateY(-5px);
+  }
+
+  .dash-label{
+    text-transform:uppercase;
+    letter-spacing:1px;
+    font-size:13px;
+    color:rgba(255,255,255,0.75);
+    margin-bottom:10px;
+  }
+
+  .dash-stat{
+    font-size:34px;
+    font-weight:700;
+    color:white;
+  }
+
+  /* Buttons */
+
+  .btn-brand{
+    background:rgba(255,255,255,0.18);
+
+    border:1px solid rgba(255,255,255,0.18);
+
+    color:white !important;
+
+    border-radius:16px;
+
+    font-weight:600;
+
+    backdrop-filter:blur(10px);
+
+    transition:0.3s;
+  }
+
+  .btn-brand:hover{
+    background:rgba(255,255,255,0.28);
+  }
+
+  .btn-outline-brand{
+    border:1px solid rgba(255,255,255,0.18);
+
+    color:white !important;
+
+    border-radius:14px;
+
+    backdrop-filter:blur(10px);
+  }
+
+  .btn-outline-brand:hover{
+    background:rgba(255,255,255,0.12);
+  }
+
+  /* Alerts */
+
+  .alert{
+    border:none;
+
+    border-radius:20px;
+
+    backdrop-filter:blur(15px);
+
+    color:white;
+  }
+
+  .alert-danger{
+    background:rgba(220,53,69,0.18);
+  }
+
+  .alert-success{
+    background:rgba(25,135,84,0.18);
+  }
+
+  /* Badge */
+
+  .badge{
+    border-radius:999px;
+    padding:8px 14px;
+  }
+
+  /* Section */
+
+  .section-title small{
+    display:block;
+    color:rgba(255,255,255,0.7);
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:5px;
+  }
+
+  /* Empty */
+
+  .empty{
+    text-align:center;
+    padding:70px 20px;
+  }
+
+  .emoji{
+    font-size:60px;
+  }
+
+  /* Table */
+
+  .table-glass {
+    overflow: hidden;
+    padding: 10px;
+    /* This container already has the glass effect,
+       so we just need to make sure the table inside doesn't cover it */
+  }
+
+  .table {
+    color: white !important;
+    margin-bottom: 0;
+    /* Remove default background */
+    background-color: transparent !important;
+  }
+
+  .table thead {
+    /* Slightly darkened header instead of solid white */
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  /* Force all table cells to be transparent */
+  .table th,
+  .table td {
+    background-color: transparent !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    vertical-align: middle;
+    color: white !important;
+  }
+
+  .table select {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+  }
+
+  .table option {
+    color: black;
+  }
+
+  /* Status */
+
+  .status{
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+    display:inline-block;
+  }
+
+  .status-PENDING{
+    background:#ffc10733;
+  }
+
+  .status-PREPARING{
+    background:#0dcaf033;
+  }
+
+  .status-OUT_FOR_DELIVERY{
+    background:#6f42c133;
+  }
+
+  .status-DELIVERED{
+    background:#19875433;
+  }
+
+  .status-CANCELLED{
+    background:#dc354533;
+  }
+
+  /* Responsive */
+
+  @media(max-width:768px){
+
+    .dash-stat{
+      font-size:28px;
+    }
+
+    .table{
+      font-size:14px;
+    }
+
+    .container{
+      padding-left:18px;
+      padding-right:18px;
+    }
+  }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+  <!-- Header -->
+
+  <h2 class="mb-1">
+    🛵 Rider Dashboard
+  </h2>
+
+  <p class="text-muted">
+
+    Pick orders, deliver, get paid.
+
+    <span class="badge bg-warning text-dark"
+          th:if="${riderCity != null and !#strings.isEmpty(riderCity)}">
+
+            📍 Showing orders in [[${riderCity}]]
+
+        </span>
+
+  </p>
+
+  <!-- Alerts -->
+
+  <div class="alert alert-danger"
+       th:if="${error}"
+       th:text="${error}">
+  </div>
+
+  <div class="alert alert-success"
+       th:if="${success}"
+       th:text="${success}">
+  </div>
+
+  <!-- Stats -->
+
+  <!-- Stats -->
+  <div class="row g-3 mb-5 align-items-stretch">
+
+    <!-- First 2 cards: smaller (col-md-2 each) -->
+    <div class="col-md-2">
+      <div class="dash-card h-100">
+        <div class="dash-label">Available</div>
+        <div class="dash-stat" th:text="${#lists.size(available)}">0</div>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="dash-card h-100">
+        <div class="dash-label">Completed Deliveries</div>
+        <div class="dash-stat" th:text="${#lists.size(completed)}">0</div>
+      </div>
+    </div>
+
+    <!-- Last 3 cards: larger revenue cards (col-md-2.66 equivalent via col-md) -->
+    <!-- Note: Using 'col-md' without a number makes them share the remaining 8 columns equally -->
+    <div class="col-md">
+      <div class="dash-card h-100">
+        <div class="dash-label">Today's Payout</div>
+        <div class="dash-stat">
+          Rs. <span th:text="${#numbers.formatDecimal(payoutToday,1,2)}">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md">
+      <div class="dash-card h-100">
+        <div class="dash-label">Total Earned</div>
+        <div class="dash-stat">
+          Rs. <span th:text="${#numbers.formatDecimal(payoutTotal,1,2)}">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md">
+      <div class="dash-card h-100">
+        <div class="dash-label">This Month</div>
+        <div class="dash-stat">
+          Rs. <span th:text="${#numbers.formatDecimal(payoutMonth,1,2)}">0</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Available Orders -->
+
+  <h4 class="section-title">
+
+    <small>New</small>
+
+    Available Orders to Pick
+
+  </h4>
+
+  <div class="empty"
+       th:if="${#lists.isEmpty(available)}">
+
+    <div class="emoji">📭</div>
+
+    <p>No orders right now.</p>
+
+  </div>
+
+  <div class="table-glass"
+       th:if="${not #lists.isEmpty(available)}">
+
+    <table class="table">
+
+      <thead>
+
+      <tr>
+        <th>ID</th>
+        <th>Restaurant</th>
+        <th>Customer & Address</th>
+        <th>Route</th>
+        <th>Fee</th>
+        <th>Action</th>
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr th:each="o : ${available}">
+
+        <td th:text="${o.id}"></td>
+
+        <td th:text="${restaurantService.byId(o.restaurantId) != null}
+                    ? ${restaurantService.byId(o.restaurantId).name}
+                    : ''">
+        </td>
+
+        <td>
+
+          <div th:with="cust=${userRepository.findById(o.customerId)}">
+            <div th:if="${cust != null}">
+              <strong th:text="${cust.name}"></strong><br/>
+              <small>📞 <a th:href="'tel:' + ${cust.phone}" th:text="${cust.phone}" style="color:white;text-decoration:underline;"></a></small><br/>
+            </div>
+            <small th:text="'📍 ' + ${o.address} + ', ' + ${o.city}"></small>
+          </div>
+
+        </td>
+
+        <td>
+
+          <a target="_blank"
+             class="btn btn-sm btn-outline-brand"
+
+             th:if="${o.hasRestaurantLocation()}"
+             th:href="${o.directionsUrl}">
+
+            🧭 Store → Buyer
+
+          </a>
+
+          <a target="_blank"
+             class="btn btn-sm btn-outline-secondary"
+
+             th:unless="${o.hasRestaurantLocation()}"
+             th:href="${o.customerGoogleMapsUrl}">
+
+            📍 Buyer Map
+
+          </a>
+
+        </td>
+
+        <td>
+
+          Rs.
+          <span th:text="${#numbers.formatDecimal(o.deliveryFee,1,2)}"></span>
+
+        </td>
+
+        <td>
+
+          <form method="post"
+                th:action="@{'/rider/pick/' + ${o.id}}">
+
+            <button class="btn btn-brand btn-sm">
+              Pick
+            </button>
+
+          </form>
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+  <!-- Active Deliveries -->
+
+  <h4 class="section-title mt-5">
+
+    <small>Active</small>
+
+    My Active Deliveries
+
+  </h4>
+
+  <div class="table-glass"
+       th:if="${not #lists.isEmpty(mine)}">
+
+    <table class="table">
+
+      <thead>
+
+      <tr>
+        <th>ID</th>
+        <th>Customer</th>
+        <th>Items</th>
+        <th>Route</th>
+        <th>Total</th>
+        <th>Fee</th>
+        <th>Status</th>
+        <th>Update</th>
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr th:each="o : ${mine}">
+
+        <td th:text="${o.id}"></td>
+
+        <td>
+          <div th:with="cust=${userRepository.findById(o.customerId)}">
+            <div th:if="${cust != null}">
+              <strong th:text="${cust.name}"></strong><br/>
+              <small>📞 <a th:href="'tel:' + ${cust.phone}" th:text="${cust.phone}" style="color:white;text-decoration:underline;"></a></small><br/>
+            </div>
+            <small th:text="'📍 ' + ${o.address} + ', ' + ${o.city}"></small>
+          </div>
+        </td>
+
+        <td>
+          <small th:text="${o.items}"></small>
+        </td>
+
+        <td>
+
+          <a target="_blank"
+             class="btn btn-sm btn-outline-brand"
+
+             th:if="${o.hasRestaurantLocation()}"
+             th:href="${o.directionsUrl}">
+
+            🧭 Navigate
+
+          </a>
+
+        </td>
+
+        <td>
+
+          Rs.
+          <span th:text="${#numbers.formatDecimal(o.total,1,2)}"></span>
+
+        </td>
+
+        <td>
+
+          Rs.
+          <span th:text="${#numbers.formatDecimal(o.deliveryFee,1,2)}"></span>
+
+        </td>
+
+        <td>
+
+                    <span class="status"
+                          th:classappend="${'status-' + o.status}"
+                          th:text="${o.status}">
+                    </span>
+
+        </td>
+
+        <td>
+
+          <form method="post"
+                th:action="@{'/rider/status/' + ${o.id}}"
+                class="d-flex gap-2">
+
+            <select name="status"
+                    class="form-select form-select-sm">
+
+              <option>OUT_FOR_DELIVERY</option>
+              <option>DELIVERED</option>
+
+            </select>
+
+            <button class="btn btn-sm btn-brand">
+              Set
+            </button>
+
+          </form>
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+  <div class="empty"
+       th:if="${#lists.isEmpty(mine)}">
+
+    <div class="emoji">🛵</div>
+
+    <p>No active deliveries.</p>
+
+  </div>
+
+  <!-- Completed -->
+
+  <h4 class="section-title mt-5">
+
+    <small>Completed</small>
+
+    Delivery History
+
+  </h4>
+
+  <div class="empty"
+       th:if="${#lists.isEmpty(completed)}">
+
+    <div class="emoji">✅</div>
+
+    <p>No completed deliveries yet.</p>
+
+  </div>
+
+  <div class="table-glass"
+       th:if="${not #lists.isEmpty(completed)}">
+
+    <table class="table">
+
+      <thead>
+
+      <tr>
+        <th>ID</th>
+        <th>Items</th>
+        <th>Order Total</th>
+        <th>Delivery Fee</th>
+        <th>Website Commission</th>
+        <th>You Earned</th>
+        <th>Status</th>
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr th:each="o : ${completed}">
+
+        <td th:text="${o.id}"></td>
+
+        <td>
+          <small th:text="${o.items}"></small>
+        </td>
+
+        <td>
+          Rs.
+          <span th:text="${#numbers.formatDecimal(o.total,1,2)}"></span>
+        </td>
+
+        <td>
+          Rs.
+          <span th:text="${#numbers.formatDecimal(o.deliveryFee,1,2)}"></span>
+        </td>
+
+        <td>
+          - Rs.
+          <span th:text="${#numbers.formatDecimal(o.riderWebsiteFee,1,2)}"></span>
+        </td>
+
+        <td>
+          <strong>
+            Rs.
+            <span th:text="${#numbers.formatDecimal(o.riderEarning,1,2)}"></span>
+          </strong>
+        </td>
+
+        <td>
+                    <span class="status status-DELIVERED">
+                        DELIVERED
+                    </span>
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

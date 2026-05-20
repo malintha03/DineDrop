@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('My Orders - DineDrop')}"></head>
+
+<style>
+
+    body{
+      min-height:100vh;
+      margin:0;
+
+      background:
+              linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+              url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1600');
+
+      background-size:cover;
+      background-position:center;
+      background-attachment:fixed;
+
+      color:white;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    }
+
+    /* soft glow blobs (iOS feel) */
+    body::before,
+    body::after{
+      content:'';
+      position:fixed;
+      width:400px;
+      height:400px;
+      border-radius:50%;
+      filter:blur(120px);
+      z-index:0;
+      opacity:0.6;
+    }
+
+    body::before{
+      background: rgba(120, 200, 255, 0.35);
+      top:-150px;
+      left:-120px;
+    }
+
+    body::after{
+      background: rgba(255, 180, 120, 0.25);
+      bottom:-150px;
+      right:-120px;
+    }
+
+    /* ===== GLASS CORE ===== */
+    .glass-card{
+      position:relative;
+      z-index:2;
+
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 22px;
+
+      padding: 18px;
+
+      box-shadow:
+              0 10px 30px rgba(0,0,0,0.15),
+              inset 0 1px 0 rgba(255,255,255,0.2);
+
+      color:white;
+    }
+
+    /* header glass */
+    .glass-header{
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:16px;
+      padding:12px;
+    }
+
+    /* status pill */
+    .status{
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      background: rgba(255,255,255,0.18);
+      border:1px solid rgba(255,255,255,0.25);
+    }
+
+    /* buttons (glass style) */
+    .btn-brand{
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color:white;
+      border-radius:14px;
+    }
+
+    .btn-brand:hover{
+      background: rgba(255,255,255,0.25);
+    }
+
+    .btn-outline-secondary{
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.25);
+      color:white;
+      background: transparent;
+    }
+
+    .btn-outline-secondary:hover{
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* alert glass */
+    .alert-glass{
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(20px);
+      border:1px solid rgba(255,255,255,0.18);
+      border-radius:14px;
+      color:white;
+    }
+
+    /* empty */
+    .empty{
+      text-align:center;
+      padding:50px;
+      opacity:0.7;
+    }
+
+    iframe{
+      border:0;
+      border-radius:16px;
+      opacity:0.9;
+    }
+
+    /* labels (Delivery, Route) white */
+    label.small.text-muted {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-weight: 500;
+    }
+
+    .glass-card small.text-muted {
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .glass-card h6 {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="glass-header mb-4">
+        <h2 class="mb-0">📦 Order History</h2>
+    </div>
+
+    <!-- SUCCESS -->
+    <div th:if="${placed}" class="alert-glass p-2 mb-3 d-flex justify-content-between align-items-center">
+        🎉 Order placed successfully!
+        <strong th:text="${placed}"></strong>
+    </div>
+
+    <div th:if="${cancelled}" class="alert-glass p-2 mb-3">
+        ✖ Order <strong th:text="${cancelled}"></strong> cancelled.
+    </div>
+
+    <div th:if="${cancelError}" class="alert-glass p-2 mb-3" th:text="${cancelError}"></div>
+
+    <!-- EMPTY -->
+    <div class="empty" th:if="${#lists.isEmpty(orders)}">
+        📭 No orders yet
+    </div>
+
+    <!-- ORDER CARD -->
+    <div class="glass-card mb-3" th:each="o : ${orders}">
+
+        <div class="d-flex justify-content-between flex-wrap gap-2">
+
+            <div>
+                <h6>Order #<span th:text="${o.id}"></span></h6>
+                <small class="text-muted" th:text="${o.createdAt}"></small>
+
+                <p class="mb-1" th:text="${o.items}"></p>
+
+                <small>
+                    📍 <span th:text="${o.address}"></span>,
+                    <span th:text="${o.city}"></span>
+                </small>
+            </div>
+
+            <div class="text-end">
+
+                <span class="status" th:text="${o.status}"></span>
+
+                <p class="mt-2 mb-0">
+                    Total: Rs. <span th:text="${#numbers.formatDecimal(o.total,1,2)}"></span>
+                </p>
+
+                <a th:if="${o.status == 'DELIVERED'}"
+                   th:href="@{'/review/add/' + ${o.id}}"
+                   class="btn btn-brand btn-sm mt-2">
+                    ⭐ Review
+                </a>
+
+                <form th:if="${o.status == 'PENDING' and (o.riderId == null or o.riderId == '')}"
+                      method="post"
+                      th:action="@{'/customer/orders/cancel/' + ${o.id}}"
+                      class="d-inline-block mt-2"
+                      onsubmit="return confirm('Cancel this order?');">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        ✖ Cancel Order
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- MAPS -->
+        <div class="row g-3 mt-2">
+
+            <!-- RIDER INFO -->
+            <div class="col-12"
+                 th:if="${o.riderId != null and !o.riderId.isEmpty() and riders != null and riders.containsKey(o.riderId)}"
+                 th:with="rider=${riders.get(o.riderId)}">
+                <div class="glass-header">
+                    <label class="small text-muted d-block mb-1">🛵 Your Rider</label>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div>
+                            <strong th:text="${rider.name}"></strong>
+                            <div class="small">
+                <span th:if="${rider.vehicle != null and !rider.vehicle.isEmpty()}"
+                      th:text="${rider.vehicle}"></span>
+                                <span th:if="${rider.licensePlate != null and !rider.licensePlate.isEmpty()}">
+                  • Plate: <strong th:text="${rider.licensePlate}"></strong>
+                </span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <a th:if="${rider.phone != null and !rider.phone.isEmpty()}"
+                               th:href="'tel:' + ${rider.phone}"
+                               class="btn btn-brand btn-sm">
+                                📞 <span th:text="${rider.phone}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="small text-muted">Delivery</label>
+                <iframe class="w-100"
+                        style="height:180px"
+                        loading="lazy"
+                        th:src="${o.customerMapEmbedUrl}"></iframe>
+            </div>
+
+            <div class="col-md-6" th:if="${o.hasRestaurantLocation()}">
+                <label class="small text-muted">Route</label>
+                <iframe class="w-100"
+                        style="height:180px"
+                        loading="lazy"
+                        th:src="${o.routeEmbedUrl}"></iframe>
+            </div>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="d-flex flex-wrap gap-2 mt-2">
+
+            <a target="_blank"
+               class="btn btn-outline-secondary btn-sm"
+               th:href="${o.customerGoogleMapsUrl}">
+                Map ↗
+            </a>
+
+            <a target="_blank"
+               class="btn btn-outline-secondary btn-sm"
+               th:if="${o.hasRestaurantLocation()}"
+               th:href="${o.directionsUrl}">
+                Route ↗
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

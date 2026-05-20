@@ -1,0 +1,28 @@
+44583829-1556-4272-a888-f78577ca54fc,Chicken Rice,hfg@cgh.lk,dfgd4,ghfd,214511,CUSTOMER
+bc3fe3ea-fe70-4f09-a410-617eac31dba3,Saman,saman@gmail.com,Saman123,kurunegala,0712545789,CUSTOMER
+f75031ab-4ab0-4e47-a673-71dcf26a8aec,trryr,samyan@gmail.com,ytryr55,fhfhhfg,46464,CUSTOMER
+df3436f6-a9d2-49b4-92a2-73d7b135aa35,ggddf,sagfdgman@gmail.com,dfgfd4554,ffgdgff,5454444,CUSTOMER
+
+0522c208-6038-469c-a30f-c371a09357a3,hfghf,sagfdgmffan@gmail.com,dfgfhd4554,hfghf,123456,OWNER
+8bc75f9d-085d-44bf-90fe-3511a7afefed,alan,alan1@gmail.com,Alan1,Udakotuwa,07845458,OWNER
+b51c7198-e5cf-44ff-a99f-5f606dec5555,sms,sms2@gmail.com,sms2,kurunegala,0778956423,OWNER
+7f745edc-47af-40d6-a878-8684c81bedee,sandu,sms02@gmail.com,sms02,kurunegala,0775842654,CUSTOMER
+
+db66eabf-3d12-4e1e-b4ae-47c9f2adfa37,sumudufoods,sumudu1@gmail.com,Sumudu1,Kandy,071856644,OWNER
+40951d4c-a473-444d-b5a9-71c69be21f68,Amanda,amanda@gmail.com,amanda1,Kurunegala,+94718956788,CUSTOMER
+7014e613-3247-4766-86da-f2d7814aaa55,sarala,sarala@gmail.com,1234,Kurunegala,+94770200367,OWNER
+
+251891e2-7930-4e72-a387-6c4acee3e566,Sineth,doni@gmail.com,122,kmkomnjnf,54654465464,OWNER
+90ef23c8-287c-4ced-8f58-4da42e1cb510,Sineth,gg@gmail.com,123,kmkomnjnf,54654465464,CUSTOMER
+2bedc87b-59df-4964-9172-5f039142e80c,Sineth,sineth@gmail.com,123,kurunegala,0714463483,OWNER
+44583829-1556-4272-a888-f78577ca54fc,Chicken Rice,hfg@cgh.lk,dfgd4,ghfd,214511,CUSTOMER
+<<<<<<< HEAD
+
+=======
+251891e2-7930-4e72-a387-6c4acee3e566,Sineth,doni@gmail.com,122,kmkomnjnf,54654465464,OWNER
+90ef23c8-287c-4ced-8f58-4da42e1cb510,Sineth,gg@gmail.com,123,kmkomnjnf,54654465464,CUSTOMER
+2bedc87b-59df-4964-9172-5f039142e80c,Sineth,sineth@gmail.com,123,kurunegala,0714463483,OWNER
+>>>>>>> e52e85b93ecf324fb6e9cdfd806b5b57f4025aac
+251891e2-7930-4e72-a387-6c4acee3e566,Sineth,doni@gmail.com,122,kmkomnjnf,54654465464,OWNER
+90ef23c8-287c-4ced-8f58-4da42e1cb510,Sineth,gg@gmail.com,123,kmkomnjnf,54654465464,CUSTOMER
+2bedc87b-59df-4964-9172-5f039142e80c,Sineth,sineth@gmail.com,123,kurunegala,0714463483,OWNER

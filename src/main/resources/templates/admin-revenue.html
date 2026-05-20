@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Revenue - DineDrop Admin')}"></head>
+<style>
+    body{
+      min-height:100vh;
+      background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.6)),
+        url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+      background-size:cover; background-attachment:fixed;
+      color:white; font-family:"SF Pro Display", sans-serif;
+      text-shadow:0 1px 3px rgba(0,0,0,0.45);
+    }
+    body::before, body::after{ content:''; position:fixed; width:320px; height:320px;
+      border-radius:50%; filter:blur(100px); z-index:0; }
+    body::before{ background:#ff9966; top:-120px; left:-100px; opacity:0.45; }
+    body::after{ background:#6dd5fa; bottom:-120px; right:-100px; opacity:0.4; }
+    .container{ position:relative; z-index:2; }
+    .glass{ background:rgba(20,20,20,0.35); backdrop-filter:blur(22px);
+      -webkit-backdrop-filter:blur(22px); border:1px solid rgba(255,255,255,0.15);
+      border-radius:24px; padding:24px; box-shadow:0 8px 32px rgba(0,0,0,0.3); color:white; }
+    .stat-num{ font-size:32px; font-weight:800; }
+    .stat-label{ color:rgba(255,255,255,0.75); text-transform:uppercase;
+      letter-spacing:1px; font-size:12px; margin-bottom:8px; }
+    .pill{ display:inline-block; padding:4px 10px; border-radius:999px;
+      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18);
+      font-size:12px; }
+</style>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="container py-5">
+    <h2 class="mb-4">💰 Website Revenue</h2>
+
+    <div class="glass mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                Restaurant commission:
+                <span class="pill" th:text="${settings.restaurantCommissionPct} + '%'"></span>
+                Rider commission:
+                <span class="pill" th:text="${settings.riderCommissionPct} + '%'"></span>
+            </div>
+            <a class="btn btn-outline-light btn-sm" th:href="@{/admin/settings}">Adjust commission →</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="glass h-100">
+                <div class="stat-label">Today</div>
+                <div class="stat-num">Rs. <span th:text="${#numbers.formatDecimal(today.total,1,2)}"></span></div>
+                <hr style="border-color:rgba(255,255,255,0.15)">
+                <div class="d-flex justify-content-between mb-2"><span>From restaurants</span>
+                    <strong>Rs. <span th:text="${#numbers.formatDecimal(today.restaurantCommission,1,2)}"></span></strong></div>
+                <div class="d-flex justify-content-between mb-2"><span>From riders</span>
+                    <strong>Rs. <span th:text="${#numbers.formatDecimal(today.riderCommission,1,2)}"></span></strong></div>
+                <div class="d-flex justify-content-between"><span>Completed orders</span>
+                    <strong th:text="${today.completedOrders}">0</strong></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass h-100">
+                <div class="stat-label">This Month</div>
+                <div class="stat-num">Rs. <span th:text="${#numbers.formatDecimal(month.total,1,2)}"></span></div>
+                <hr style="border-color:rgba(255,255,255,0.15)">
+                <div class="d-flex justify-content-between mb-2"><span>From restaurants</span>
+                    <strong>Rs. <span th:text="${#numbers.formatDecimal(month.restaurantCommission,1,2)}"></span></strong></div>
+                <div class="d-flex justify-content-between mb-2"><span>From riders</span>
+                    <strong>Rs. <span th:text="${#numbers.formatDecimal(month.riderCommission,1,2)}"></span></strong></div>
+                <div class="d-flex justify-content-between"><span>Completed orders</span>
+                    <strong th:text="${month.completedOrders}">0</strong></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass h-100">
+                <div class="stat-label">All-time</div>
+                <div class="stat-num">Rs. <span th:text="${#numbers.formatDecimal(overall.total,1,2)}"></span></div>
+                <hr style="border-color:rgba(255,255,255,0.15)">
+                <div class="d-flex justify-content-between mb-2"><span>From restaurants</span>
+                    <strong>Rs. <span th:text="${#numbers.formatDecimal(overall.restaurantCommission,1,2)}"></span></strong></div>
+                <div class="d-flex justify-content-between mb-2"><span>From riders</span>
+                    <strong>Rs. <span th:text="${#numbers.formatDecimal(overall.riderCommission,1,2)}"></span></strong></div>
+                <div class="d-flex justify-content-between"><span>Completed orders</span>
+                    <strong th:text="${overall.completedOrders}">0</strong></div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>
+
+

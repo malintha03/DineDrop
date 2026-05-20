@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Manage Restaurants - DineDrop')}"></head>
+
+<style>
+    body{
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.75)),
+        url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1600');
+        background-size: cover;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    .glass-card{
+        background: rgba(20,20,20,0.35);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .glass-table{
+        width:100%;
+        color:white;
+    }
+
+    .glass-table thead{
+        background: rgba(255,255,255,0.08);
+    }
+
+    .glass-table tbody tr{
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .glass-table td,
+    .glass-table th{
+        padding:14px;
+        vertical-align: middle;
+    }
+
+    .btn-outline-danger{
+        border-color: rgba(255,255,255,0.3);
+        color:white;
+    }
+
+    .btn-outline-danger:hover{
+        background: rgba(255,0,0,0.25);
+    }
+
+    /* subtle badge style for owner */
+    .owner-badge{
+        padding:4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        display: inline-block;
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+    <h2 class="mb-4">All Restaurants</h2>
+
+    <div class="glass-card">
+
+        <table class="glass-table">
+
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>City</th>
+                <th>Cuisine</th>
+                <th>Owner</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="r : ${restaurants}">
+
+                <td th:text="${r.id}"></td>
+
+                <td th:text="${r.name}"></td>
+
+                <td th:text="${r.city}"></td>
+
+                <td th:text="${r.cuisine}"></td>
+
+                <td>
+                    <span class="owner-badge" th:text="${r.ownerId}"></span>
+                </td>
+
+                <td>
+                    <form method="post"
+                          th:action="@{'/admin/restaurants/delete/' + ${r.id}}"
+                          data-confirm="Delete restaurant?">
+
+                        <button class="btn btn-sm btn-outline-danger">
+                            Delete
+                        </button>
+
+                    </form>
+                </td>
+
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(restaurants)}">
+                <td colspan="6" class="text-center py-4" style="opacity:0.7;">
+                    No restaurants found
+                </td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Manage Users - DineDrop')}"></head>
+<style>
+    body{
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.75)),
+        url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1600');
+        background-size: cover; background-attachment: fixed; color: white;
+    }
+    .glass-card{ background: rgba(20,20,20,0.35); backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 18px; overflow: hidden; }
+    .glass-table{ width:100%; color:white; }
+    .glass-table thead{ background: rgba(255,255,255,0.08); }
+    .glass-table tbody tr{ border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .glass-table td, .glass-table th{ padding:14px; vertical-align: middle; }
+    .alert-glass-success{ background: rgba(40,167,69,0.15); border: 1px solid rgba(40,167,69,0.3);
+        backdrop-filter: blur(15px); color: white; border-radius: 14px; }
+    .alert-glass-danger{ background: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.3);
+        backdrop-filter: blur(15px); color: white; border-radius: 14px; }
+    .role-badge{ padding:4px 10px; border-radius: 999px; font-size: 12px;
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px); display: inline-block; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn-outline-danger{ border-color: rgba(255,255,255,0.3); color:white; }
+    .btn-outline-danger:hover{ background: rgba(255,0,0,0.25); }
+    .nav-pills .nav-link{ color:rgba(255,255,255,0.85); border-radius:999px;
+        background:rgba(255,255,255,0.08); margin-right:8px; }
+    .nav-pills .nav-link.active{ background:rgba(255,255,255,0.25); color:white; }
+    h4.section-title{ margin: 28px 0 14px; }
+</style>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="container py-5">
+    <h2 class="mb-4">Manage Users</h2>
+
+    <div th:if="${success}" class="alert-glass-success p-2 mb-3" th:text="${success}"></div>
+    <div th:if="${error}" class="alert-glass-danger p-2 mb-3" th:text="${error}"></div>
+
+    <ul class="nav nav-pills mb-4">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#tab-customers">
+            Customers (<span th:text="${#lists.size(customers)}"></span>)</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#tab-owners">
+            Restaurant Owners (<span th:text="${#lists.size(owners)}"></span>)</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#tab-riders">
+            Riders (<span th:text="${#lists.size(riders)}"></span>)</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#tab-admins">
+            Admins (<span th:text="${#lists.size(admins)}"></span>)</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="tab-customers">
+            <div th:replace="~{::userTable(${customers}, 'customer')}"></div>
+        </div>
+        <div class="tab-pane fade" id="tab-owners">
+            <div th:replace="~{::userTable(${owners}, 'owner')}"></div>
+        </div>
+        <div class="tab-pane fade" id="tab-riders">
+            <div th:replace="~{::userTable(${riders}, 'rider')}"></div>
+        </div>
+        <div class="tab-pane fade" id="tab-admins">
+            <div th:replace="~{::userTable(${admins}, 'admin')}"></div>
+        </div>
+    </div>
+
+    <!-- The fragment is now wrapped in a th:block with th:if="false" so it won't render here,
+         but remains available for the th:replace calls above. -->
+    <th:block th:if="false">
+        <div th:fragment="userTable(list, kind)" class="glass-card">
+            <table class="glass-table">
+                <thead>
+                <tr>
+                    <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>City</th>
+                    <th th:if="${kind == 'rider'}">Vehicle</th>
+                    <th th:if="${kind == 'rider'}">NIC</th>
+                    <th th:if="${kind == 'rider'}">Vehicle No.</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${list}">
+                    <td th:text="${u.id}"></td>
+                    <td th:text="${u.name}"></td>
+                    <td th:text="${u.email}"></td>
+                    <td th:text="${u.phone}"></td>
+                    <td><span class="role-badge" th:text="${u.role}"></span></td>
+                    <td th:text="${u.city}"></td>
+                    <td th:if="${kind == 'rider'}" th:text="${u.vehicle}"></td>
+                    <td th:if="${kind == 'rider'}" th:text="${u.licenseNumber}"></td>
+                    <td th:if="${kind == 'rider'}" th:text="${u.licensePlate}"></td>
+                    <td>
+                        <form th:if="${u.id != session.user.id}" method="post"
+                              th:action="@{'/admin/users/delete/' + ${u.id}}"
+                              data-confirm="Delete this user?">
+                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                        <span th:if="${u.id == session.user.id}" class="text-muted small" style="opacity:0.7;">(you)</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(list)}">
+                    <td colspan="10" class="text-center py-4" style="opacity:0.7;">No users found</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </th:block>
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>

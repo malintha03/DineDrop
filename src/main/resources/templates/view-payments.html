@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('My Payments - DineDrop')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="container py-5">
+  <h2 class="mb-4">💳 Payment History</h2>
+  <div class="empty" th:if="${#lists.isEmpty(payments)}"><div class="emoji">📭</div><p>No payments yet.</p></div>
+  <table class="table bg-white rounded" th:if="${not #lists.isEmpty(payments)}">
+    <thead><tr><th>Payment ID</th><th>Order</th><th>Card</th><th>Amount</th><th>Status</th><th>Paid At</th></tr></thead>
+    <tbody>
+    <tr th:each="p : ${payments}">
+      <td th:text="${p.id}"></td><td th:text="${p.orderId}"></td>
+      <td>•••• <span th:text="${p.cardLast4}"></span></td>
+      <td>Rs. <span th:text="${#numbers.formatDecimal(p.amount,1,2)}"></span></td>
+      <td><span class="status status-DELIVERED" th:text="${p.status}"></span></td>
+      <td th:text="${p.paidAt}"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>

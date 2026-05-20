@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Manage Foods - DineDrop')}"></head>
+
+<style>
+    body{
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)),
+      url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1600');
+      background-size: cover;
+      background-attachment: fixed;
+      color: white;
+    }
+
+    .glass-card{
+      background: rgba(20,20,20,0.35);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .glass-table{
+      width:100%;
+      color:white;
+    }
+
+    .glass-table thead{
+      background: rgba(255,255,255,0.08);
+    }
+
+    .glass-table tbody tr{
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .glass-table td, .glass-table th{
+      padding:14px;
+      vertical-align: middle;
+    }
+
+    .alert-glass{
+      background: rgba(40,167,69,0.15);
+      border: 1px solid rgba(40,167,69,0.3);
+      backdrop-filter: blur(15px);
+      color:white;
+      border-radius: 14px;
+    }
+
+    .alert-glass-danger{
+      background: rgba(220,53,69,0.15);
+      border: 1px solid rgba(220,53,69,0.3);
+      backdrop-filter: blur(15px);
+      color:white;
+      border-radius: 14px;
+    }
+
+    img.food-img{
+      width:60px;
+      height:60px;
+      object-fit:cover;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-outline-danger{
+      border-color: rgba(255,255,255,0.3);
+      color:white;
+    }
+
+    .btn-outline-danger:hover{
+      background: rgba(255,0,0,0.2);
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+    <h2 class="mb-4">Manage Foods</h2>
+
+    <!-- SUCCESS -->
+    <div th:if="${success}" class="alert-glass p-2 mb-3" th:text="${success}"></div>
+
+    <!-- ERROR -->
+    <div th:if="${error}" class="alert-glass-danger p-2 mb-3" th:text="${error}"></div>
+
+    <!-- GLASS TABLE -->
+    <div class="glass-card">
+
+        <table class="glass-table">
+
+            <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Restaurant</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="f : ${foods}">
+
+                <td>
+                    <img class="food-img"
+                         th:if="${f.image != null and !f.image.isEmpty()}"
+                         th:src="@{'/uploads/' + ${f.image}}">
+                </td>
+
+                <td th:text="${f.name}"></td>
+
+                <td th:text="${restaurantService.byId(f.restaurantId) != null ? restaurantService.byId(f.restaurantId).name : '-'}"></td>
+
+                <td>Rs. <span th:text="${f.price}"></span></td>
+
+                <td>
+                    <form method="post"
+                          th:action="@{'/admin/foods/delete/' + ${f.id}}"
+                          data-confirm="Delete this food?">
+
+                        <button class="btn btn-sm btn-outline-danger">
+                            Delete
+                        </button>
+
+                    </form>
+                </td>
+
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(foods)}">
+                <td colspan="5" class="text-center py-4" style="opacity:0.7;">
+                    No foods found
+                </td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

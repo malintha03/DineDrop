@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Reviews - DineDrop')}"></head>
+
+<style>
+
+
+    body{
+      min-height:100vh;
+
+      background:
+              linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)),
+              url('https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?q=80&w=1600');
+
+      background-size:cover;
+      background-position:center;
+      background-attachment:fixed;
+
+      color:white;
+
+      font-family:"SF Pro Display", sans-serif;
+
+      text-shadow:0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* glow */
+
+    body::before,
+    body::after{
+      content:'';
+      position:fixed;
+      width:320px;
+      height:320px;
+      border-radius:50%;
+      filter:blur(110px);
+      z-index:0;
+    }
+
+    body::before{
+      background:#ff9966;
+      top:-120px;
+      left:-100px;
+      opacity:0.45;
+    }
+
+    body::after{
+      background:#6dd5fa;
+      bottom:-120px;
+      right:-100px;
+      opacity:0.35;
+    }
+
+    /* container */
+
+    .container{
+      position:relative;
+      z-index:2;
+    }
+
+    /* ===== GLASS CARD ===== */
+
+    .dash-card{
+
+      background:rgba(20,20,20,0.35);
+
+      backdrop-filter:blur(22px);
+      -webkit-backdrop-filter:blur(22px);
+
+      border:1px solid rgba(255,255,255,0.15);
+
+      border-radius:24px;
+
+      padding:20px;
+
+      color:white;
+
+      box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    /* title */
+
+    h2{
+      font-weight:800;
+    }
+
+    /* stars */
+
+    .stars{
+      color:#ffd700;
+      font-size:14px;
+      letter-spacing:2px;
+    }
+
+    /* text */
+
+    .text-muted{
+      color:rgba(255,255,255,0.75) !important;
+    }
+
+    /* buttons */
+
+    .btn-outline-primary,
+    .btn-outline-danger{
+      border-radius:14px;
+      color:white !important;
+    }
+
+    /* empty */
+
+    .empty{
+      text-align:center;
+      padding:50px;
+      color:rgba(255,255,255,0.8);
+    }
+
+    .empty .emoji{
+      font-size:40px;
+      margin-bottom:10px;
+    }
+
+    /* review layout */
+
+    .review-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    /* responsive */
+
+    @media(max-width:768px){
+      .dash-card{
+        padding:16px;
+      }
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+    <h2 class="mb-4">⭐ Reviews</h2>
+
+    <!-- EMPTY -->
+
+    <div class="empty"
+         th:if="${#lists.isEmpty(reviews)}">
+
+        <div class="emoji">💬</div>
+
+        <p>No reviews yet.</p>
+
+    </div>
+
+    <!-- REVIEWS -->
+
+    <div class="row g-3">
+
+        <div class="col-md-6"
+             th:each="rv : ${reviews}">
+
+            <div class="dash-card h-100">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <div class="stars"
+                             th:text="${'★★★★★'.substring(0, rv.rating)}"></div>
+
+                        <strong th:text="${rv.customerName}"></strong>
+
+                        <small class="text-muted"
+                               th:if="${restaurantService != null and restaurantService.byId(rv.restaurantId) != null}">
+
+                            · <span th:text="${restaurantService.byId(rv.restaurantId).name}"></span>
+
+                        </small>
+
+                    </div>
+
+                    <small class="text-muted"
+                           th:text="${rv.createdAt}"></small>
+
+                </div>
+
+                <p class="mt-2"
+                   th:text="${rv.comment}"></p>
+
+                <!-- ACTIONS -->
+
+                <div class="d-flex gap-2 mt-2">
+
+                    <a th:if="${session.user != null and #strings.equals(session.user.id, rv.customerId)}"
+                       class="btn btn-sm btn-outline-primary"
+                       th:href="@{'/review/edit/' + ${rv.id}}">
+
+                        Edit
+
+                    </a>
+
+                    <form th:if="${session.user != null and #strings.equals(session.user.id, rv.customerId)}"
+                          method="post"
+                          th:action="@{'/review/delete/' + ${rv.id}}"
+                          data-confirm="Delete your review?">
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+
+                    <form th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                          method="post"
+                          th:action="@{'/admin/reviews/delete/' + ${rv.id}}"
+                          data-confirm="Delete this review?">
+
+                        <button class="btn btn-sm btn-outline-danger">
+
+                            Delete
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

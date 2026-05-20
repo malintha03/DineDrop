@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Owner Dashboard - FoodieGo')}"></head>
+
+<style>
+
+    :root{
+        --glass-bg: rgba(20,20,20,0.35);
+        --glass-border: rgba(255,255,255,0.16);
+
+        --text-main: #ffffff;
+        --text-soft: rgba(255,255,255,0.85);
+
+        --blur: blur(20px);
+        --shadow: 0 8px 32px rgba(0,0,0,0.28);
+
+        --radius: 30px;
+    }
+
+    /* Background */
+
+    body{
+        min-height:100vh;
+
+        background:
+                linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.5)),
+                url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+
+        background-size:cover;
+        background-position:center;
+        background-attachment:fixed;
+
+        font-family:"SF Pro Display", sans-serif;
+
+        color:white;
+
+        text-shadow:0 1px 3px rgba(0,0,0,0.45);
+
+        overflow-x:hidden;
+    }
+
+    /* Glow */
+
+    body::before,
+    body::after{
+        content:'';
+        position:fixed;
+        width:300px;
+        height:300px;
+        border-radius:50%;
+        filter:blur(90px);
+        z-index:0;
+    }
+
+    body::before{
+        background:#ff9966;
+        top:-100px;
+        left:-80px;
+        opacity:0.45;
+    }
+
+    body::after{
+        background:#6dd5fa;
+        bottom:-120px;
+        right:-100px;
+        opacity:0.4;
+    }
+
+    /* Container */
+
+    .container{
+        position:relative;
+        z-index:2;
+    }
+
+    /* Typography */
+
+    h1,h2,h3,h4,h5,h6{
+        color:white;
+        font-weight:700;
+    }
+
+    .text-muted{
+        color:rgba(255,255,255,0.75) !important;
+    }
+
+    /* Glass Cards */
+
+    .dash-card,
+    .glass-box,
+    .table-glass{
+        background:var(--glass-bg);
+
+        backdrop-filter:var(--blur);
+        -webkit-backdrop-filter:var(--blur);
+
+        border:1px solid var(--glass-border);
+
+        border-radius:var(--radius);
+
+        box-shadow:var(--shadow);
+
+        transition:0.35s ease;
+    }
+
+    .dash-card:hover,
+    .glass-box:hover{
+        transform:translateY(-5px);
+    }
+
+    /* Dashboard Cards */
+
+    .dash-card{
+        padding:24px;
+        text-align:center;
+    }
+
+    .dash-label{
+        color:rgba(255,255,255,0.75);
+        text-transform:uppercase;
+        letter-spacing:1px;
+        font-size:13px;
+        margin-bottom:10px;
+    }
+
+    .dash-stat{
+        font-size:40px;
+        font-weight:700;
+        color:white;
+    }
+
+    /* Buttons */
+
+    .btn-brand{
+        background:rgba(255,255,255,0.18);
+        border:1px solid rgba(255,255,255,0.18);
+
+        color:white !important;
+
+        border-radius:16px;
+
+        font-weight:600;
+
+        backdrop-filter:blur(12px);
+    }
+
+    .btn-brand:hover{
+        background:rgba(255,255,255,0.28);
+    }
+
+    .btn-outline-brand{
+        border:1px solid rgba(255,255,255,0.2);
+        color:white !important;
+        border-radius:14px;
+        backdrop-filter:blur(10px);
+    }
+
+    .btn-outline-brand:hover{
+        background:rgba(255,255,255,0.15);
+    }
+
+    /* Alert */
+
+    .alert{
+        border:none;
+        border-radius:20px;
+
+        background:rgba(255,193,7,0.15);
+
+        color:#fff;
+
+        backdrop-filter:blur(15px);
+    }
+
+    /* Restaurant Card */
+
+    .restaurant-image{
+        width:100%;
+        height:150px;
+        object-fit:cover;
+        border-radius:20px;
+    }
+
+    .menu-item{
+        background:rgba(255,255,255,0.08);
+
+        border:1px solid rgba(255,255,255,0.08);
+
+        border-radius:18px;
+
+        padding:12px;
+
+        transition:0.3s;
+    }
+
+    .menu-item:hover{
+        background:rgba(255,255,255,0.12);
+    }
+
+    .menu-item img{
+        width:60px;
+        height:60px;
+        object-fit:cover;
+        border-radius:14px;
+    }
+
+    /* Empty */
+
+    .empty{
+        text-align:center;
+        padding:70px 20px;
+    }
+
+    .emoji{
+        font-size:60px;
+    }
+
+    /* Section Title */
+
+    .section-title small{
+        display:block;
+        color:rgba(255,255,255,0.7);
+        text-transform:uppercase;
+        letter-spacing:1px;
+        margin-bottom:5px;
+    }
+
+    /* Table */
+
+    .table-glass {
+        overflow: hidden;
+        padding: 10px;
+        /* This container already has the glass effect,
+           so we just need to make sure the table inside doesn't cover it */
+    }
+
+    .table {
+        color: white !important;
+        margin-bottom: 0;
+        /* Remove default background */
+        background-color: transparent !important;
+    }
+
+    .table thead {
+        /* Slightly darkened header instead of solid white */
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    /* Force all table cells to be transparent */
+    .table th,
+    .table td {
+        background-color: transparent !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        vertical-align: middle;
+        color: white !important;
+    }
+
+    .table select {
+        background: rgba(255, 255, 255, 0.12) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+    }
+
+    .table option {
+        color: black;
+    }
+
+    /* Status */
+
+    .status{
+        padding:8px 14px;
+        border-radius:999px;
+        font-size:12px;
+        font-weight:600;
+        display:inline-block;
+    }
+
+    .status-PENDING{
+        background:#ffc10733;
+    }
+
+    .status-PREPARING{
+        background:#0dcaf033;
+    }
+
+    .status-OUT_FOR_DELIVERY{
+        background:#6f42c133;
+    }
+
+    .status-DELIVERED{
+        background:#19875433;
+    }
+
+    .status-CANCELLED{
+        background:#dc354533;
+    }
+
+    /* Responsive */
+
+    @media(max-width:768px){
+
+        .dash-stat{
+            font-size:30px;
+        }
+
+        .restaurant-image{
+            height:200px;
+            margin-bottom:15px;
+        }
+
+        .text-end{
+            text-align:left !important;
+            margin-top:15px;
+        }
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+        <div>
+            <h2 class="mb-1">🏪 Owner Dashboard</h2>
+
+            <p class="text-muted mb-0">
+                Manage your restaurant & menu
+            </p>
+
+            <small class="text-muted">
+                One owner email can create one restaurant.
+                You can add unlimited foods to it.
+            </small>
+        </div>
+
+        <a class="btn btn-brand"
+           th:if="${#lists.isEmpty(restaurants)}"
+           th:href="@{/owner/restaurant/add}">
+
+            + Add Restaurant
+
+        </a>
+
+        <button class="btn btn-outline-brand"
+                th:if="${not #lists.isEmpty(restaurants)}"
+                disabled>
+
+            Restaurant already created
+
+        </button>
+
+    </div>
+
+    <!-- Alert -->
+
+    <div class="alert alert-warning"
+         th:if="${param.restaurantLimit != null}">
+
+        You can create only one restaurant with this owner email.
+
+    </div>
+
+    <!-- Stats -->
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-4">
+            <div class="dash-card">
+
+                <div class="dash-label">Foods Added</div>
+
+                <div class="dash-stat"
+                     th:text="${totalFoods}">
+                    0
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dash-card">
+
+                <div class="dash-label">Total Orders</div>
+
+                <div class="dash-stat"
+                     th:text="${#lists.size(orders)}">
+                    0
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dash-card">
+
+                <div class="dash-label">Pending</div>
+
+                <div class="dash-stat"
+                     th:text="${#lists.size(orders.?[status == 'PENDING'])}">
+                    0
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Income (DELIVERED orders only) -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="dash-card">
+                <div class="dash-label">Today's Income</div>
+                <div class="dash-stat">Rs. <span th:text="${#numbers.formatDecimal(incomeToday,1,2)}">0.00</span></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dash-card">
+                <div class="dash-label">This Month</div>
+                <div class="dash-stat">Rs. <span th:text="${#numbers.formatDecimal(incomeMonth,1,2)}">0.00</span></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dash-card">
+                <div class="dash-label">Total Income</div>
+                <div class="dash-stat">Rs. <span th:text="${#numbers.formatDecimal(incomeTotal,1,2)}">0.00</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-warning"
+         th:if="${statusError != null}"
+         th:text="${statusError}"></div>
+
+    <!-- Restaurant -->
+
+    <h4 class="section-title">
+        <small>My restaurant</small>
+        Restaurant & Menu
+    </h4>
+
+    <div class="empty"
+         th:if="${#lists.isEmpty(restaurants)}">
+
+        <div class="emoji">🏪</div>
+
+        <p>No restaurant yet. Add your first!</p>
+
+    </div>
+
+    <div class="glass-box p-4 mb-4"
+         th:each="r : ${restaurants}">
+
+        <div class="row align-items-center g-4">
+
+            <div class="col-md-2">
+
+                <img class="restaurant-image"
+
+                     th:src="${r.image != null and !r.image.isEmpty()}
+                     ? @{'/uploads/' + ${r.image}}
+                     : 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=300'">
+
+            </div>
+
+            <div class="col-md-7">
+
+                <h5 th:text="${r.name}">
+                    Restaurant Name
+                </h5>
+
+                <p class="mb-1">
+
+                    📍
+                    <span th:text="${r.city}"></span>
+
+                    ·
+
+                    <span th:text="${r.cuisine}"></span>
+
+                </p>
+
+                <small class="text-muted"
+                       th:text="${r.address}">
+                </small>
+
+                <br>
+
+                <a target="_blank"
+                   class="btn btn-sm btn-outline-brand mt-3"
+                   th:href="${r.googleMapsUrl}">
+
+                    📍 Store Map
+
+                </a>
+
+            </div>
+
+            <div class="col-md-3 text-end">
+
+                <a class="btn btn-sm btn-outline-brand mb-2"
+                   th:href="@{'/owner/restaurant/edit/' + ${r.id}}">
+
+                    Edit
+
+                </a>
+
+                <a class="btn btn-sm btn-brand mb-2"
+                   th:href="@{'/owner/food/add/' + ${r.id}}">
+
+                    + Food
+
+                </a>
+
+                <form method="post"
+                      th:action="@{'/owner/restaurant/delete/' + ${r.id}}"
+                      data-confirm="Delete restaurant and ALL its foods?"
+                      class="d-inline">
+
+                    <button class="btn btn-sm btn-outline-danger">
+                        Delete
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <hr class="border-light opacity-25 my-4">
+
+        <!-- Menu -->
+
+        <h6 class="mb-3">📋 Menu Items</h6>
+
+        <div class="row g-3">
+
+            <div class="col-md-4"
+                 th:each="f : ${foodService.byRestaurant(r.id)}">
+
+                <div class="menu-item d-flex gap-3 align-items-center">
+
+                    <img th:src="${f.image != null and !f.image.isEmpty()}
+                         ? @{'/uploads/' + ${f.image}}
+                         : 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=100'">
+
+                    <div class="flex-grow-1">
+
+                        <strong th:text="${f.name}">
+                            Food
+                        </strong>
+
+                        <br>
+
+                        <small class="text-muted">
+
+                            Rs.
+                            <span th:text="${#numbers.formatDecimal(f.price,1,2)}"></span>
+
+                        </small>
+
+                    </div>
+
+                    <div class="d-flex flex-column gap-1">
+
+                        <a class="btn btn-sm btn-outline-brand"
+                           th:href="@{'/owner/food/edit/' + ${f.id}}">
+
+                            ✏️
+
+                        </a>
+
+                        <form method="post"
+                              th:action="@{'/owner/food/delete/' + ${f.id}}">
+
+                            <button class="btn btn-sm btn-outline-danger">
+                                ✕
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <hr class="border-light opacity-25 my-4">
+
+        <!-- Coupon (per restaurant) -->
+        <h6 class="mb-3">🎟️ Promo Coupon</h6>
+        <form method="post"
+              th:action="@{/owner/coupons/save}"
+              class="row g-2 align-items-end"
+              th:with="cp=${couponByRestaurant != null ? couponByRestaurant.get(r.id) : null}">
+
+            <input type="hidden" name="restaurantId" th:value="${r.id}">
+            <input type="hidden" name="id" th:value="${cp != null ? cp.id : ''}">
+            <input type="hidden" name="type" value="AMOUNT">
+            <input type="hidden" name="minOrder" value="0">
+            <input type="hidden" name="expiryDate" value="">
+            <input type="hidden" name="description" value="">
+
+            <div class="col-md-4">
+                <label class="text-muted small">Coupon Code</label>
+                <input class="form-control"
+                       name="code"
+                       placeholder="e.g. WELCOME10"
+                       style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:14px;"
+                       th:value="${cp != null ? cp.code : ''}"
+                       required>
+            </div>
+
+            <div class="col-md-3">
+                <label class="text-muted small">Discount (Rs.)</label>
+                <input class="form-control"
+                       type="number" min="0" step="0.01"
+                       name="value"
+                       style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:14px;"
+                       th:value="${cp != null ? cp.value : 0}"
+                       required>
+            </div>
+
+            <div class="col-md-3">
+                <label class="text-muted small d-block">Status</label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox"
+                           name="enabled" value="true"
+                           th:checked="${cp == null or cp.enabled}">
+                    <label class="form-check-label">Enabled</label>
+                </div>
+            </div>
+
+            <div class="col-md-2 text-end">
+                <button class="btn btn-sm btn-brand w-100">
+                    <span th:text="${cp != null ? 'Update' : 'Save'}">Save</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Active Orders (Pending / Preparing / Out for Delivery) -->
+
+    <h4 class="section-title mt-5">
+        <small>Active</small>
+        Pending &amp; In-Progress Orders
+        <span class="badge bg-warning text-dark ms-2"
+              th:text="'Pending: ' + ${#lists.size(pendingOrders)}"></span>
+    </h4>
+
+    <div class="empty" th:if="${#lists.isEmpty(activeOrders)}">
+        <div class="emoji">📭</div>
+        <p>No active orders.</p>
+    </div>
+
+    <div class="table-glass" th:if="${not #lists.isEmpty(activeOrders)}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Items</th>
+                <th>Address</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${activeOrders}">
+                <td th:text="${o.id}"></td>
+                <td th:text="${o.items}"></td>
+                <td>
+                    <small th:text="${o.address} + ', ' + ${o.city}"></small><br>
+                    <a target="_blank" class="btn btn-sm btn-outline-brand mt-2"
+                       th:if="${o.hasRestaurantLocation()}"
+                       th:href="${o.directionsUrl}">🧭 Route</a>
+                </td>
+                <td>Rs. <span th:text="${#numbers.formatDecimal(o.total,1,2)}"></span></td>
+                <td>
+                    <span class="status" th:classappend="${'status-' + o.status}" th:text="${o.status}"></span>
+                </td>
+                <td>
+                    <form method="post" th:action="@{'/owner/order/status/' + ${o.id}}" class="d-flex gap-2">
+                        <select class="form-select form-select-sm" name="status">
+                            <option th:if="${o.status == 'PENDING'}">PENDING</option>
+                            <option th:if="${o.status == 'PENDING' or o.status == 'PREPARING'}">PREPARING</option>
+                            <option th:if="${o.status == 'PENDING' or o.status == 'PREPARING' or o.status == 'OUT_FOR_DELIVERY'}">OUT_FOR_DELIVERY</option>
+                            <option>DELIVERED</option>
+                            <option th:if="${o.status == 'PENDING'}">CANCELLED</option>
+                        </select>
+                        <button class="btn btn-sm btn-brand">Set</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Completed Orders -->
+
+    <h4 class="section-title mt-5">
+        <small>Completed</small>
+        Completed Orders
+    </h4>
+
+    <div class="empty" th:if="${#lists.isEmpty(completedOrders)}">
+        <div class="emoji">✅</div>
+        <p>No completed orders yet.</p>
+    </div>
+
+    <div class="table-glass" th:if="${not #lists.isEmpty(completedOrders)}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Items</th>
+                <th>Address</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Customer Review</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${completedOrders}">
+                <td th:text="${o.id}"></td>
+                <td th:text="${o.items}"></td>
+                <td><small th:text="${o.address} + ', ' + ${o.city}"></small></td>
+                <td>Rs. <span th:text="${#numbers.formatDecimal(o.total,1,2)}"></span></td>
+                <td><span class="status status-DELIVERED">DELIVERED</span></td>
+                <td th:with="rv=${reviewByOrder != null ? reviewByOrder.get(o.id) : null}">
+                    <div th:if="${rv != null}">
+                        <span th:text="'⭐ ' + ${rv.rating} + '/5'" style="font-weight:600;"></span><br>
+                        <small th:text="${rv.comment}" style="opacity:0.85;"></small><br>
+                        <small class="text-muted" th:text="'— ' + ${rv.customerName}"></small>
+                    </div>
+                    <small class="text-muted" th:if="${rv == null}">No review yet</small>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Cancelled Orders -->
+
+    <h4 class="section-title mt-5">
+        <small>Cancelled</small>
+        Cancelled Orders
+    </h4>
+
+    <div class="empty" th:if="${#lists.isEmpty(cancelledOrders)}">
+        <div class="emoji">🚫</div>
+        <p>No cancelled orders.</p>
+    </div>
+
+    <div class="table-glass" th:if="${not #lists.isEmpty(cancelledOrders)}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Items</th>
+                <th>Address</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${cancelledOrders}">
+                <td th:text="${o.id}"></td>
+                <td th:text="${o.items}"></td>
+                <td><small th:text="${o.address} + ', ' + ${o.city}"></small></td>
+                <td>Rs. <span th:text="${#numbers.formatDecimal(o.total,1,2)}"></span></td>
+                <td><span class="status status-CANCELLED">CANCELLED</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>DineDrop | Premium Register</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --gold: #D4AF37;
+      --dark: #0f0f0f;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #111;
+      overflow: hidden;
+    }
+
+    /* PAGE WRAPPER */
+    .page-wrapper {
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* LEFT SIDE - Scrollable */
+    .register-side {
+      width: 45%;
+      height: 100vh;
+      background: rgba(15, 15, 15, 0.94);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      padding: 60px 45px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Custom Scrollbar */
+    .register-side::-webkit-scrollbar {
+      width: 5px;
+    }
+    .register-side::-webkit-scrollbar-track {
+      background: #111;
+    }
+    .register-side::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 10px;
+    }
+
+    .register-card {
+      width: 100%;
+      max-width: 460px;
+      margin-top: auto;
+      margin-bottom: auto;
+      animation: fadeUp 1s ease;
+    }
+
+    /* BRAND */
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.3rem;
+      margin-bottom: 8px;
+    }
+
+    .brand a {
+      text-decoration: none;
+      color: white;
+    }
+
+    .brand span {
+      color: var(--gold);
+    }
+
+    .sub-text {
+      color: rgba(255, 255, 255, .7);
+      margin-bottom: 30px;
+    }
+
+    /* ROLE NAV */
+    .role-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .role-btn {
+      flex: 1;
+      border: none;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .06);
+      color: #aaa;
+      font-weight: 600;
+      transition: .3s;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, .08);
+      font-size: 0.9rem;
+    }
+
+    .role-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .role-btn.active {
+      background: var(--gold);
+      color: white;
+      box-shadow: 0 10px 20px rgba(212, 175, 55, .3);
+    }
+
+    /* FORM */
+    .form-label {
+      color: white;
+      font-size: .85rem;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-control {
+      height: 50px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .08);
+      color: white;
+      padding: 12px 15px;
+    }
+
+    /* FIX: Unreadable dropdown options */
+    select.form-control option {
+      background-color: #1a1a1a;
+      color: white;
+    }
+
+    .form-control:focus {
+      background: rgba(255, 255, 255, .1);
+      color: white;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, .1);
+    }
+
+    /* BUTTON */
+    .btn-register {
+      height: 55px;
+      border: none;
+      border-radius: 16px;
+      background: var(--gold);
+      color: white;
+      font-weight: 700;
+      transition: .35s;
+      box-shadow: 0 10px 25px rgba(212, 175, 55, .3);
+      margin-top: 10px;
+    }
+
+    .btn-register:hover {
+      transform: translateY(-3px);
+      background: #bc982b;
+    }
+
+    .bottom-links {
+      margin-top: 25px;
+      padding-bottom: 20px;
+    }
+
+    .bottom-links a {
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* EXTRA FIELD */
+    .extra-field {
+      display: none;
+      animation: slideDown .4s ease forwards;
+    }
+
+    .field-note {
+      display: block;
+      margin-top: 6px;
+      color: rgba(255, 255, 255, .45);
+      font-size: .78rem;
+      line-height: 1.35;
+    }
+
+    .rider-verify-alert {
+      border: 1px solid rgba(212, 175, 55, .6);
+      background: rgba(212, 175, 55, .10);
+      color: #f6d65f;
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-size: .86rem;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RIGHT SIDE */
+    .visual-side {
+      width: 55%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .visual-side img {
+      width: 100%;
+      height: 100vh;
+      object-fit: cover;
+      animation: zoomMove 18s ease-in-out infinite alternate;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to left, rgba(0,0,0,.2), rgba(0,0,0,.75));
+    }
+
+    /* ANIMATIONS */
+    @keyframes zoomMove {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* MOBILE */
+    @media(max-width:991px) {
+      body { overflow: auto; }
+      .page-wrapper { flex-direction: column; height: auto; }
+      .register-side { width: 100%; height: auto; overflow: visible; padding: 40px 25px; }
+      .visual-side { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+  <!-- LEFT SIDE -->
+  <div class="register-side">
+    <div class="register-card">
+      <h1 class="brand">
+        <a href="/">🍽 DINE<span>DROP</span></a>
+      </h1>
+      <p class="sub-text">Experience premium food delivery at your doorstep.</p>
+
+      <!-- ERROR -->
+      <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+      <!-- ROLE TOGGLE -->
+      <div class="role-nav">
+        <button type="button" class="role-btn active" id="btn-CUSTOMER" onclick="switchRole('CUSTOMER')">Customer</button>
+        <button type="button" class="role-btn" id="btn-OWNER" onclick="switchRole('OWNER')">Owner</button>
+        <button type="button" class="role-btn" id="btn-RIDER" onclick="switchRole('RIDER')">Rider</button>
+      </div>
+
+      <!-- FORM -->
+      <form method="post" th:action="@{/register}" id="reg-form">
+        <input type="hidden" name="role" id="roleInput" th:value="${role} ?: 'CUSTOMER'">
+
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input class="form-control" name="name" placeholder="John Doe" required>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" name="email" placeholder="john@example.com" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone</label>
+            <input class="form-control" name="phone" type="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" placeholder="07XXXXXXXX" required>
+          </div>
+        </div>
+
+        <!-- CITY (DYNAMIC) -->
+        <div class="mb-3 extra-field" id="city-group">
+          <label class="form-label" id="city-label">City</label>
+          <input class="form-control" name="city" id="city-input">
+        </div>
+
+        <!-- RIDER VERIFICATION NOTICE -->
+        <div class="mb-3 extra-field rider-verify-alert" id="rider-alert">
+          ⚡ Riders must verify identity. Please provide your vehicle details and a valid ID number below.
+        </div>
+
+        <!-- VEHICLE (DYNAMIC) -->
+        <div class="mb-3 extra-field" id="vehicle-group">
+          <label class="form-label">VEHICLE TYPE</label>
+          <select class="form-control" name="vehicle" id="vehicle-input">
+            <option value="">Select your vehicle</option>
+            <option value="Bike">Bike</option>
+            <option value="Scooter">Scooter</option>
+            <option value="Car">Car</option>
+            <option value="Van">Van</option>
+          </select>
+          <small class="field-note">Choose the vehicle you’ll use for deliveries.</small>
+        </div>
+
+        <div class="row extra-field" id="rider-id-row">
+          <!-- VEHICLE NUMBER (RIDER ONLY) -->
+          <div class="col-md-6 mb-3" id="plate-group">
+            <label class="form-label">VEHICLE NUMBER</label>
+            <input class="form-control" name="licensePlate" id="plate-input"
+                   placeholder="e.g. WP-CAB-1234"
+                   pattern="([A-Za-z]{2,3}-)?[A-Za-z]{2,3}-\d{4}" maxlength="12"
+                   style="text-transform:uppercase"
+                   title="Use ABC-1234 or WP-CAB-1234 format">
+            <small class="field-note">License plate of your delivery vehicle.</small>
+          </div>
+
+          <!-- ID / NIC NUMBER (RIDER ONLY) -->
+          <div class="col-md-6 mb-3" id="license-group">
+            <label class="form-label">ID / NIC NUMBER</label>
+            <input class="form-control" name="licenseNumber" id="license-input"
+                   placeholder="e.g. 200012345678"
+                   pattern="(\d{12}|\d{9}[VvXx])" maxlength="12"
+                   inputmode="text"
+                   title="Use 12 digits or old NIC format: 9 digits followed by V or X">
+            <small class="field-note">National ID — used to verify your identity.</small>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Password</label>
+          <input class="form-control" type="password" name="password" placeholder="Min. 4 characters" required minlength="4">
+        </div>
+
+        <button class="btn btn-register w-100" id="submit-btn">Create Account</button>
+      </form>
+
+      <div class="bottom-links text-center">
+        <p class="text-light small mb-2">Already have an account?</p>
+        <a th:href="@{/login}">Login</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="visual-side">
+    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=2070" alt="Food">
+    <div class="overlay"></div>
+    <!-- Floating cards removed as requested -->
+  </div>
+</div>
+
+<script>
+  function switchRole(role) {
+    document.getElementById('roleInput').value = role;
+
+    document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('btn-' + role).classList.add('active');
+
+    const cityGroup = document.getElementById('city-group');
+    const cityLabel = document.getElementById('city-label');
+    const cityInput = document.getElementById('city-input');
+    const riderAlert = document.getElementById('rider-alert');
+    const vehicleGroup = document.getElementById('vehicle-group');
+    const vehicleInput = document.getElementById('vehicle-input');
+    const riderIdRow = document.getElementById('rider-id-row');
+    const licenseInput = document.getElementById('license-input');
+    const plateInput = document.getElementById('plate-input');
+    const submitBtn = document.getElementById('submit-btn');
+
+    cityGroup.style.display = 'none';
+    riderAlert.style.display = 'none';
+    vehicleGroup.style.display = 'none';
+    riderIdRow.style.display = 'none';
+    cityInput.required = false;
+    vehicleInput.required = false;
+    licenseInput.required = false;
+    plateInput.required = false;
+
+    if (role === 'OWNER') {
+      cityGroup.style.display = 'block';
+      cityLabel.innerText = 'Restaurant City';
+      cityInput.required = true;
+    } else if (role === 'RIDER') {
+      cityGroup.style.display = 'block';
+      riderAlert.style.display = 'block';
+      vehicleGroup.style.display = 'block';
+      riderIdRow.style.display = 'flex';
+      cityLabel.innerText = 'Service City';
+      cityInput.required = true;
+      vehicleInput.required = true;
+      licenseInput.required = true;
+      plateInput.required = true;
+    }
+
+    // Maintain button text consistency
+    submitBtn.innerText = 'Create Account';
+  }
+
+  window.onload = function() {
+    switchRole(document.getElementById('roleInput').value);
+  };
+</script>
+
+</body>
+</html>

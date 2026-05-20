@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Promo Codes - DineDrop')}"></head>
+<style>
+    body{ min-height:100vh;
+        background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.6)),
+        url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+        background-size:cover; background-attachment:fixed;
+        color:white; font-family:"SF Pro Display", sans-serif; text-shadow:0 1px 3px rgba(0,0,0,0.45); }
+    body::before, body::after{ content:''; position:fixed; width:320px; height:320px;
+        border-radius:50%; filter:blur(100px); z-index:0; }
+    body::before{ background:#ff9966; top:-120px; left:-100px; opacity:0.45; }
+    body::after{ background:#6dd5fa; bottom:-120px; right:-100px; opacity:0.4; }
+    .container{ position:relative; z-index:2; }
+    .glass{ background:rgba(20,20,20,0.35); backdrop-filter:blur(22px);
+        border:1px solid rgba(255,255,255,0.15); border-radius:24px; padding:24px; color:white; }
+    .form-control, .form-select{ background:rgba(255,255,255,0.1)!important;
+        border:1px solid rgba(255,255,255,0.2)!important; color:white!important; border-radius:14px; padding:10px; }
+    .btn-brand{ background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.18);
+        color:white; border-radius:16px; font-weight:600; padding:10px 18px; }
+    .btn-brand:hover{ background:rgba(255,255,255,0.28); color:white; }
+    table{ width:100%; color:white; }
+    th, td{ padding:12px; border-bottom:1px solid rgba(255,255,255,0.08); }
+    thead{ background:rgba(255,255,255,0.06); }
+    .pill{ display:inline-block; padding:4px 10px; border-radius:999px;
+        background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.18); font-size:12px; }
+    .pill.off{ background:rgba(220,53,69,0.18); border-color:rgba(220,53,69,0.35); }
+    label{ font-weight:600; color:rgba(255,255,255,0.85); margin-bottom:6px; }
+</style>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="container py-5">
+    <h2 class="mb-4">🎟️ Promo Codes</h2>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="glass">
+                <h5 class="mb-3">Create new coupon</h5>
+                <form method="post" th:action="@{/owner/coupons/save}">
+                    <div class="mb-3" th:if="${not #lists.isEmpty(restaurants)}">
+                        <label>Restaurant</label>
+                        <select class="form-select" name="restaurantId" required>
+                            <option th:each="r : ${restaurants}" th:value="${r.id}" th:text="${r.name}"></option>
+                        </select>
+                    </div>
+                    <div th:if="${#lists.isEmpty(restaurants)}" class="text-muted">
+                        Add a restaurant first to create coupons.
+                    </div>
+                    <div class="mb-3"><label>Code</label>
+                        <input class="form-control" name="code" placeholder="WELCOME10" required></div>
+                    <div class="row g-2">
+                        <div class="col mb-3"><label>Type</label>
+                            <select class="form-select" name="type">
+                                <option value="PERCENT">Percent (%)</option>
+                                <option value="AMOUNT">Flat amount (Rs.)</option>
+                            </select></div>
+                        <div class="col mb-3"><label>Value</label>
+                            <input class="form-control" type="number" step="0.01" name="value" required></div>
+                    </div>
+                    <div class="mb-3"><label>Minimum order (Rs.)</label>
+                        <input class="form-control" type="number" step="0.01" name="minOrder" value="0"></div>
+                    <div class="mb-3"><label>Expiry date</label>
+                        <input class="form-control" type="date" name="expiryDate"></div>
+                    <div class="mb-3"><label>Description</label>
+                        <input class="form-control" name="description" placeholder="Welcome promo for new customers"></div>
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" type="checkbox" id="enabled" name="enabled" value="true" checked>
+                        <label for="enabled">Enabled</label>
+                    </div>
+                    <button class="btn btn-brand w-100" th:disabled="${#lists.isEmpty(restaurants)}">Save coupon</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="glass">
+                <h5 class="mb-3">Your coupons</h5>
+                <div th:if="${#lists.isEmpty(coupons)}" class="text-muted">No coupons yet.</div>
+                <table th:if="${not #lists.isEmpty(coupons)}">
+                    <thead><tr><th>Code</th><th>Restaurant</th><th>Discount</th><th>Min</th>
+                        <th>Expiry</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                    <tr th:each="c : ${coupons}">
+                        <td><strong th:text="${c.code}"></strong>
+                            <div class="text-muted small" th:text="${c.description}"></div></td>
+                        <td th:with="r=${restaurantService.byId(c.restaurantId)}"
+                            th:text="${r != null ? r.name : c.restaurantId}"></td>
+                        <td>
+                            <span th:if="${c.type == 'PERCENT'}" th:text="${c.value} + '%'"></span>
+                            <span th:if="${c.type == 'AMOUNT'}">Rs. <span th:text="${#numbers.formatDecimal(c.value,1,2)}"></span></span>
+                        </td>
+                        <td>Rs. <span th:text="${#numbers.formatDecimal(c.minOrder,1,2)}"></span></td>
+                        <td th:text="${c.expiryDate != null and !c.expiryDate.isEmpty() ? c.expiryDate : '—'}"></td>
+                        <td>
+                            <span th:if="${c.enabled}" class="pill">Active</span>
+                            <span th:unless="${c.enabled}" class="pill off">Disabled</span>
+                        </td>
+                        <td class="d-flex gap-2">
+                            <form method="post" th:action="@{'/owner/coupons/toggle/' + ${c.id}}">
+                                <button class="btn btn-sm btn-outline-light">Toggle</button>
+                            </form>
+                            <form method="post" th:action="@{'/owner/coupons/delete/' + ${c.id}}"
+                                  data-confirm="Delete this coupon?">
+                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>

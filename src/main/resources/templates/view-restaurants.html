@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Restaurants - DineDrop')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="container py-5">
+    <h2>🏪 Browse Restaurants</h2>
+    <div class="row g-4 mt-1">
+        <div class="col-md-4" th:each="r : ${restaurants}">
+            <div class="card-rest h-100">
+                <img class="card-img-top" th:src="${r.image != null and !r.image.isEmpty()} ? @{'/uploads/' + ${r.image}} : 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600'">
+                <div class="card-body">
+                    <span class="badge-cuisine" th:text="${r.cuisine}">cuisine</span>
+                    <h5 class="mt-2 mb-1" th:text="${r.name}">name</h5>
+                    <p class="text-muted small">📍 <span th:text="${r.city}">city</span></p>
+                    <p class="text-muted small" th:if="${r.address != null}">🏠 <span th:text="${r.address}">addr</span></p>
+                    <iframe class="w-100 rounded mb-2" style="height:180px;border:0"
+                            loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                            th:src="${r.mapEmbedUrl}"></iframe>
+                    <a th:href="@{/foods(restaurantId=${r.id})}" class="btn btn-brand btn-sm">Menu</a>
+                    <a target="_blank" class="btn btn-outline-secondary btn-sm" th:href="${r.googleMapsUrl}">📍 Directions</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>

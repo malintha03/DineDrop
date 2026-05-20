@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('My Profile - DineDrop')}"></head>
+
+<style>
+
+    /* ===== iOS 26 GLASS BACKGROUND ===== */
+
+    body{
+        min-height:100vh;
+
+        background:
+                linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+                url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+
+        background-size:cover;
+        background-position:center;
+        background-attachment:fixed;
+
+        font-family:"SF Pro Display", sans-serif;
+        color:white;
+
+        text-shadow:0 1px 3px rgba(0,0,0,0.45);
+    }
+
+    /* glow */
+
+    body::before,
+    body::after{
+        content:'';
+        position:fixed;
+        width:320px;
+        height:320px;
+        border-radius:50%;
+        filter:blur(100px);
+        z-index:0;
+    }
+
+    body::before{
+        background:#ff9966;
+        top:-120px;
+        left:-100px;
+        opacity:0.45;
+    }
+
+    body::after{
+        background:#6dd5fa;
+        bottom:-120px;
+        right:-100px;
+        opacity:0.4;
+    }
+
+    /* container */
+
+    .container{
+        position:relative;
+        z-index:2;
+    }
+
+    /* ===== GLASS CARD ===== */
+
+    .dash-card{
+
+        background:rgba(20,20,20,0.35);
+
+        backdrop-filter:blur(22px);
+        -webkit-backdrop-filter:blur(22px);
+
+        border:1px solid rgba(255,255,255,0.15);
+
+        border-radius:28px;
+
+        padding:28px;
+
+        color:white;
+
+        box-shadow:0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    /* ===== 👤 HEADER TITLE (FULL WHITE) ===== */
+
+    h3{
+        font-weight:900;
+        font-size:30px;
+        letter-spacing:0.5px;
+
+        color:#ffffff !important;
+
+        text-shadow:
+                0 4px 14px rgba(0,0,0,0.95),
+                0 0 25px rgba(255,255,255,0.25);
+
+        margin-bottom:10px;
+    }
+
+    /* ROLE TEXT (WHITE) */
+
+    h3 small{
+        font-size:14px !important;
+        font-weight:700;
+
+        color:#ffffff !important;
+
+        text-shadow:0 2px 8px rgba(0,0,0,0.9);
+
+        margin-left:8px;
+
+        display:inline-block;
+    }
+
+    /* muted */
+
+    .text-muted{
+        color:rgba(255,255,255,0.75) !important;
+    }
+
+    /* labels */
+
+    label{
+        font-weight:600;
+        margin-bottom:6px;
+        color:rgba(255,255,255,0.85);
+    }
+
+    /* inputs */
+
+    .form-control,
+    .form-select{
+        background:rgba(255,255,255,0.10) !important;
+
+        border:1px solid rgba(255,255,255,0.15) !important;
+
+        color:white !important;
+
+        border-radius:14px;
+
+        padding:12px;
+    }
+
+    .form-control:disabled{
+        background:rgba(255,255,255,0.08) !important;
+        color:rgba(255,255,255,0.7) !important;
+    }
+
+    .form-control:focus,
+    .form-select:focus{
+        box-shadow:none;
+        border-color:rgba(255,255,255,0.35) !important;
+    }
+
+    /* buttons */
+
+    .btn-brand{
+        background:rgba(255,255,255,0.18);
+
+        border:1px solid rgba(255,255,255,0.18);
+
+        color:white !important;
+
+        font-weight:600;
+
+        border-radius:16px;
+
+        padding:10px 16px;
+
+        transition:0.3s;
+    }
+
+    .btn-brand:hover{
+        background:rgba(255,255,255,0.28);
+    }
+
+    /* alerts */
+
+    .alert{
+        border:0;
+        border-radius:14px;
+        backdrop-filter:blur(15px);
+        color:white;
+    }
+
+    .alert-success{
+        background:rgba(40,167,69,0.2);
+    }
+
+    .alert-danger{
+        background:rgba(220,53,69,0.2);
+    }
+
+    /* responsive */
+
+    @media(max-width:768px){
+        .dash-card{
+            padding:20px;
+        }
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="dash-card">
+
+                <!-- 👤 HEADER -->
+                <h3>
+                    👤 My Profile
+                    <small th:text="${user.role}">
+                        CUSTOMER
+                    </small>
+                </h3>
+
+                <form method="post"
+                      th:action="@{/profile}"
+                      class="mt-3">
+
+                    <div class="mb-3">
+                        <label>Name</label>
+                        <input class="form-control"
+                               name="name"
+                               th:value="${user.name}"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Email (locked)</label>
+                        <input class="form-control"
+                               th:value="${user.email}"
+                               disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Phone</label>
+                        <input class="form-control"
+                               name="phone"
+                               type="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}"
+                               th:value="${user.phone}">
+                    </div>
+
+                    <div th:if="${user.role == 'RIDER'}">
+                        <div class="mb-3">
+                            <label>Service City</label>
+                            <input class="form-control" name="city" th:value="${user.city}">
+                        </div>
+                        <div class="mb-3">
+                            <label>Vehicle Type</label>
+                            <input class="form-control" name="vehicle" th:value="${user.vehicle}" placeholder="Bike / Car / Three-wheeler">
+                        </div>
+                        <div class="mb-3">
+                            <label>NIC / ID Number</label>
+                            <input class="form-control" name="licenseNumber" th:value="${user.licenseNumber}">
+                        </div>
+                        <div class="mb-3">
+                            <label>Vehicle Number</label>
+                            <input class="form-control" name="licensePlate" th:value="${user.licensePlate}" placeholder="WP-CAB-1234">
+                        </div>
+                    </div>
+
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+                    <div class="mb-3">
+                        <label>New Password</label>
+                        <input type="password"
+                               class="form-control"
+                               name="password">
+                    </div>
+
+                    <button class="btn btn-brand w-100">
+                        Save Changes
+                    </button>
+
+                </form>
+
+                <hr class="my-4">
+
+                <form method="post"
+                      th:action="@{/profile/delete}">
+
+                    <button class="btn btn-outline-danger w-100">
+                        Delete My Account
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

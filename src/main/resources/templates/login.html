@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>DineDrop | Premium Login</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+
+    :root{
+      --gold:#D4AF37;
+      --dark:#0f0f0f;
+      --soft:#f8f9fa;
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      background:#111;
+      overflow:hidden;
+    }
+
+    /* BACKGROUND */
+    .page-wrapper{
+      min-height:100vh;
+      display:flex;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* LEFT LOGIN PANEL */
+    .login-side{
+      width:45%;
+      min-height:100vh;
+      background:rgba(15,15,15,0.94);
+      backdrop-filter:blur(12px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:50px;
+      position:relative;
+      z-index:5;
+    }
+
+    .login-card{
+      width:100%;
+      max-width:430px;
+      animation:fadeUp 1s ease;
+    }
+
+    .brand{
+      font-family:'Playfair Display',serif;
+      font-size:2rem;
+      color:white;
+      margin-bottom:15px;
+    }
+
+    .brand span{
+      color:var(--gold);
+    }
+
+    .sub-text{
+      color:rgba(255,255,255,.7);
+      margin-bottom:40px;
+    }
+
+    /* ROLE SELECTOR */
+    .role-selector{
+      display:flex;
+      gap:10px;
+      margin-bottom:30px;
+    }
+
+    .role-item{
+      flex:1;
+      text-align:center;
+      padding:14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.06);
+      color:#aaa;
+      cursor:pointer;
+      transition:.3s;
+      font-weight:600;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .role-item:hover{
+      transform:translateY(-3px);
+      background:rgba(255,255,255,.1);
+    }
+
+    .role-item.active{
+      background:var(--gold);
+      color:white;
+      box-shadow:0 10px 25px rgba(212,175,55,.35);
+    }
+
+    /* FORM */
+    .form-label{
+      color:white;
+      font-size:.9rem;
+      margin-bottom:8px;
+      font-weight:600;
+    }
+
+    .form-control{
+      height:55px;
+      border-radius:16px;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+      color:white;
+      padding:15px;
+    }
+
+    .form-control:focus{
+      background:rgba(255,255,255,.1);
+      color:white;
+      border-color:var(--gold);
+      box-shadow:0 0 0 0.2rem rgba(212,175,55,.15);
+    }
+
+    .form-control::placeholder{
+      color:#888;
+    }
+
+    /* BUTTON */
+    .btn-login{
+      height:58px;
+      border:none;
+      border-radius:18px;
+      background:var(--gold);
+      color:white;
+      font-weight:700;
+      transition:.35s;
+      box-shadow:0 10px 25px rgba(212,175,55,.3);
+    }
+
+    .btn-login:hover{
+      transform:translateY(-3px);
+      background:#bc982b;
+    }
+
+    /* LINKS */
+    .bottom-links{
+      margin-top:35px;
+    }
+
+    .bottom-links a{
+      color:var(--gold);
+      text-decoration:none;
+      font-weight:600;
+      transition:.3s;
+    }
+
+    .bottom-links a:hover{
+      opacity:.8;
+    }
+
+    /* RIGHT SIDE */
+    .visual-side{
+      width:55%;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .visual-side img{
+      width:100%;
+      height:100vh;
+      object-fit:cover;
+      animation:zoomMove 18s ease-in-out infinite alternate;
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      background:
+              linear-gradient(to left, rgba(0,0,0,.15), rgba(0,0,0,.75));
+    }
+
+    /* FLOATING CARDS */
+    .floating-card{
+      position:absolute;
+      background:rgba(255,255,255,.1);
+      backdrop-filter:blur(15px);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:24px;
+      padding:20px;
+      color:white;
+      box-shadow:0 10px 35px rgba(0,0,0,.2);
+      animation:float 5s ease-in-out infinite;
+    }
+
+    .card1{
+      top:12%;
+      right:10%;
+      width:260px;
+    }
+
+    .card2{
+      bottom:12%;
+      right:18%;
+      width:220px;
+      animation-delay:1.5s;
+    }
+
+    .food-thumb{
+      width:55px;
+      height:55px;
+      border-radius:15px;
+      object-fit:cover;
+    }
+
+    /* ANIMATIONS */
+    @keyframes float{
+      0%{
+        transform:translateY(0px);
+      }
+      50%{
+        transform:translateY(-12px);
+      }
+      100%{
+        transform:translateY(0px);
+      }
+    }
+
+    @keyframes zoomMove{
+      0%{
+        transform:scale(1);
+      }
+      100%{
+        transform:scale(1.08);
+      }
+    }
+
+    @keyframes fadeUp{
+      from{
+        opacity:0;
+        transform:translateY(30px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    /* MOBILE */
+    @media(max-width:991px){
+
+      body{
+        overflow:auto;
+      }
+
+      .page-wrapper{
+        flex-direction:column;
+      }
+
+      .login-side{
+        width:100%;
+        min-height:100vh;
+        padding:35px 25px;
+      }
+
+      .visual-side{
+        display:none;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+  <!-- LEFT LOGIN -->
+  <div class="login-side">
+
+    <div class="login-card">
+
+      <h1 class="brand">
+        <a href="/"
+           style="text-decoration:none; color:white;">
+          🍽 DINE<span>DROP</span>
+        </a>
+      </h1>
+
+      <p class="sub-text">
+        Welcome back to the premium food delivery experience.
+        Select your role and continue your journey.
+      </p>
+
+      <!-- ERROR -->
+      <div class="alert alert-danger"
+           th:if="${error}"
+           th:text="${error}">
+      </div>
+
+      <!-- FORM -->
+      <form method="post"
+            th:action="@{/login}">
+
+        <!-- ROLE SELECT -->
+        <div class="role-selector">
+
+          <div class="role-item active"
+               onclick="setRole('CUSTOMER', this)">
+            Customer
+          </div>
+
+          <div class="role-item"
+               onclick="setRole('OWNER', this)">
+            Owner
+          </div>
+
+          <div class="role-item"
+               onclick="setRole('RIDER', this)">
+            Rider
+          </div>
+
+        </div>
+
+        <!-- HIDDEN -->
+        <input type="hidden"
+               name="role"
+               id="selectedRole"
+               value="CUSTOMER">
+
+        <!-- EMAIL -->
+        <div class="mb-4">
+
+          <label class="form-label">
+            Email Address
+          </label>
+
+          <input class="form-control"
+                 type="email"
+                 name="email"
+                 placeholder="name@example.com"
+                 required>
+
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="mb-4">
+
+          <label class="form-label">
+            Password
+          </label>
+
+          <input class="form-control"
+                 type="password"
+                 name="password"
+                 placeholder="••••••••"
+                 required
+                 minlength="4">
+
+        </div>
+
+        <!-- BUTTON -->
+        <button type="submit"
+                class="btn btn-login w-100">
+
+          Sign In
+
+        </button>
+
+      </form>
+
+      <!-- LINKS -->
+      <div class="bottom-links text-center">
+
+        <p class="text-light small mb-3">
+          Don’t have an account?
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+
+          <a th:href="@{/register}">
+            User Register
+          </a>
+
+          <span class="text-secondary">|</span>
+
+          <a th:href="@{/register(role='OWNER')}">
+            Restaurant Partner
+          </a>
+
+          <span class="text-secondary">|</span>
+
+          <!-- RIDER REGISTER -->
+          <a th:href="@{/register(role='RIDER')}">
+            Rider Register
+          </a>
+
+        </div>
+
+        <div class="mt-4">
+
+          <a th:href="@{/admin-login}"
+             class="text-secondary small">
+            Access Admin Portal
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- RIGHT VISUAL -->
+  <div class="visual-side">
+
+    <!-- BACKGROUND IMAGE -->
+    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=2070"
+         alt="Food">
+
+    <div class="overlay"></div>
+
+    <!-- FLOATING CARD 1 -->
+
+
+
+
+  </div>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+
+  function setRole(role, element) {
+
+    document.getElementById('selectedRole').value = role;
+
+    document.querySelectorAll('.role-item').forEach(item => {
+      item.classList.remove('active');
+    });
+
+    element.classList.add('active');
+  }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Manage Orders - DineDrop')}"></head>
+
+<style>
+    body{
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.75)),
+        url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1600');
+        background-size: cover;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    .glass-card{
+        background: rgba(20,20,20,0.35);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .glass-table{
+        width:100%;
+        color:white;
+    }
+
+    .glass-table thead{
+        background: rgba(255,255,255,0.08);
+    }
+
+    .glass-table tbody tr{
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .glass-table td,
+    .glass-table th{
+        padding:14px;
+        vertical-align: middle;
+    }
+
+    .alert-glass-danger{
+        background: rgba(220,53,69,0.15);
+        border: 1px solid rgba(220,53,69,0.3);
+        backdrop-filter: blur(15px);
+        color:white;
+        border-radius: 14px;
+    }
+
+    .btn-outline-danger{
+        border-color: rgba(255,255,255,0.3);
+        color:white;
+    }
+
+    .btn-outline-danger:hover{
+        background: rgba(255,0,0,0.25);
+    }
+
+    /* STATUS CHIPS (modern glass style) */
+    .status{
+        padding:6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.15);
+        display: inline-block;
+    }
+
+    .status-PENDING{
+        background: rgba(255,193,7,0.15);
+        color: #ffd36b;
+    }
+
+    .status-DELIVERED{
+        background: rgba(40,167,69,0.15);
+        color: #7CFF9B;
+    }
+
+    .status-CANCELLED{
+        background: rgba(220,53,69,0.15);
+        color: #ff7b7b;
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+    <h2 class="mb-4">All Orders</h2>
+
+    <div th:if="${error}" class="alert-glass-danger p-2 mb-3" th:text="${error}"></div>
+
+    <!-- GLASS CARD -->
+    <div class="glass-card">
+
+        <table class="glass-table">
+
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Restaurant</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="o : ${orders}">
+
+                <td th:text="${o.id}"></td>
+
+                <td th:text="${o.customerId}"></td>
+
+                <td th:text="${restaurantService.byId(o.restaurantId) != null ? restaurantService.byId(o.restaurantId).name : '-'}"></td>
+
+                <td>
+                    <small style="opacity:0.85;" th:text="${o.items}"></small>
+                </td>
+
+                <td>
+                    Rs. <span th:text="${#numbers.formatDecimal(o.total,1,2)}"></span>
+                </td>
+
+                <td>
+          <span class="status"
+                th:classappend="${'status-' + o.status}"
+                th:text="${o.status}">
+          </span>
+                </td>
+
+                <td>
+                    <form method="post"
+                          th:action="@{'/admin/orders/delete/' + ${o.id}}"
+                          data-confirm="Delete order?">
+
+                        <button class="btn btn-sm btn-outline-danger">
+                            Delete
+                        </button>
+
+                    </form>
+                </td>
+
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(orders)}">
+                <td colspan="7" class="text-center py-4" style="opacity:0.7;">
+                    No orders found
+                </td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

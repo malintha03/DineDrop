@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Add Restaurant - DineDrop')}"></head>
+
+<style>
+
+    /* ===== iOS 26 GLASS BACKGROUND ===== */
+
+    body{
+        min-height:100vh;
+
+        background:
+                linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+                url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+
+        background-size:cover;
+        background-position:center;
+        background-attachment:fixed;
+
+        font-family:"SF Pro Display", sans-serif;
+        color:white;
+        text-shadow:0 1px 3px rgba(0,0,0,0.45);
+    }
+
+    /* glow */
+
+    body::before,
+    body::after{
+        content:'';
+        position:fixed;
+        width:320px;
+        height:320px;
+        border-radius:50%;
+        filter:blur(100px);
+        z-index:0;
+    }
+
+    body::before{
+        background:#ff9966;
+        top:-120px;
+        left:-100px;
+        opacity:0.45;
+    }
+
+    body::after{
+        background:#6dd5fa;
+        bottom:-120px;
+        right:-100px;
+        opacity:0.4;
+    }
+
+    /* container */
+
+    .container{
+        position:relative;
+        z-index:2;
+    }
+
+    /* ===== GLASS FORM ===== */
+
+    .auth-card{
+
+        max-width:820px;
+
+        margin:60px auto;
+
+        padding:35px;
+
+        background:rgba(20,20,20,0.35);
+
+        backdrop-filter:blur(22px);
+        -webkit-backdrop-filter:blur(22px);
+
+        border:1px solid rgba(255,255,255,0.15);
+
+        border-radius:32px;
+
+        box-shadow:0 8px 32px rgba(0,0,0,0.3);
+
+        color:white;
+    }
+
+    /* ===== 🔥 MAIN TITLE (ADD RESTAURANT) ===== */
+
+    .auth-card h3{
+        font-weight:800;
+        font-size:30px;
+        letter-spacing:0.5px;
+
+        color:#ffffff;
+
+        text-shadow:
+                0 2px 10px rgba(0,0,0,0.7),
+                0 0 22px rgba(255,255,255,0.2);
+
+        margin-bottom:8px;
+    }
+
+    /* ===== 🌫 DESCRIPTION (CLEAR BUT SOFT) ===== */
+
+    .text-muted{
+        color:rgba(255,255,255,0.60) !important;
+        font-size:14px;
+        line-height:1.5;
+    }
+
+    /* ===== 📌 SECTION TITLE (STORE LOCATION PIN) ===== */
+
+    h6{
+        font-weight:700;
+        font-size:16px;
+        color:#ffffff;
+        text-shadow:0 2px 8px rgba(0,0,0,0.6);
+        margin-bottom:5px;
+    }
+
+    /* ===== SMALL HELP TEXT ===== */
+
+    small,
+    .text-muted.small{
+        color:rgba(255,255,255,0.55) !important;
+        font-size:12px;
+    }
+
+    /* inputs */
+
+    .form-control{
+        background:rgba(255,255,255,0.10) !important;
+
+        border:1px solid rgba(255,255,255,0.15) !important;
+
+        color:white !important;
+
+        border-radius:14px;
+
+        padding:12px;
+    }
+
+    .form-control::placeholder{
+        color:rgba(255,255,255,0.5);
+    }
+
+    .form-control:focus{
+        box-shadow:none;
+        border-color:rgba(255,255,255,0.35) !important;
+    }
+
+    /* labels */
+
+    label{
+        font-weight:600;
+        font-size:14px;
+        color:rgba(255,255,255,0.80);
+        margin-bottom:6px;
+        display:block;
+    }
+
+    /* buttons */
+
+    .btn-brand{
+        background:rgba(255,255,255,0.18);
+        border:1px solid rgba(255,255,255,0.18);
+        color:white !important;
+        border-radius:16px;
+        font-weight:600;
+        transition:0.3s;
+    }
+
+    .btn-brand:hover{
+        background:rgba(255,255,255,0.28);
+    }
+
+    .btn-outline-secondary{
+        border-radius:14px;
+        color:rgba(255,255,255,0.85) !important;
+    }
+
+    /* glass panel */
+
+    .dash-card{
+        background:rgba(255,255,255,0.08);
+        backdrop-filter:blur(18px);
+        border:1px solid rgba(255,255,255,0.15);
+        border-radius:22px;
+        color:white;
+    }
+
+    /* map */
+
+    .map-pin-canvas,
+    .location-preview-map{
+        border-radius:18px;
+        border:1px solid rgba(255,255,255,0.15);
+        overflow:hidden;
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container">
+
+    <div class="auth-card">
+
+        <!-- 🔥 MAIN TITLE -->
+        <h3>🏪 Add Restaurant</h3>
+
+        <!-- 🌫 DESCRIPTION -->
+        <p class="text-muted">
+            Each owner email can create one restaurant. After this, use your dashboard to add multiple food items.
+        </p>
+
+        <form method="post"
+              th:action="@{/owner/restaurant/add}"
+              enctype="multipart/form-data">
+
+            <!-- Name -->
+            <div class="mb-3">
+                <label>Name</label>
+                <input class="form-control" name="name" required>
+            </div>
+
+            <!-- City + Cuisine -->
+            <div class="row">
+
+                <div class="col mb-3">
+                    <label>City</label>
+                    <input class="form-control" name="city" required>
+                </div>
+
+                <div class="col mb-3">
+                    <label>Cuisine</label>
+                    <input class="form-control" name="cuisine"
+                           placeholder="Italian, Indian, Chinese..." required>
+                </div>
+
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+                <label>Address</label>
+                <input class="form-control" name="address" required>
+            </div>
+
+            <!-- LOCATION BOX -->
+            <div class="dash-card mb-4 p-3">
+
+                <!-- 📌 SECTION TITLE -->
+                <h6>📍 Store Location Pin</h6>
+
+                <!-- SOFT TEXT -->
+                <p class="text-muted small">
+                    Select location using map or GPS
+                </p>
+
+                <div id="storePinMap"
+                     class="map-pin-canvas w-100 mb-3"
+                     style="height:200px"></div>
+
+                <div class="row g-2">
+
+                    <div class="col-md-4">
+                        <label class="small">Latitude</label>
+                        <input type="number" step="any" class="form-control"
+                               id="latitude" name="latitude">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="small">Longitude</label>
+                        <input type="number" step="any" class="form-control"
+                               id="longitude" name="longitude">
+                    </div>
+
+                    <div class="col-md-4 d-grid gap-2">
+
+                        <button type="button" class="btn btn-brand btn-sm">
+                            Add Location
+                        </button>
+
+                        <button type="button" class="btn btn-outline-secondary btn-sm">
+                            Use GPS
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <small class="d-block mt-2" id="coordText">
+                    No GPS pin selected yet.
+                </small>
+
+                <iframe id="storeMap"
+                        class="location-preview-map w-100 mt-2"
+                        style="height:220px"
+                        loading="lazy"
+                        src="https://maps.google.com/maps?q=Sri+Lanka&output=embed">
+                </iframe>
+
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label>Description</label>
+                <textarea class="form-control" name="description" rows="2"></textarea>
+            </div>
+
+            <!-- Image -->
+            <div class="mb-4">
+                <label>Cover Image</label>
+                <input type="file" class="form-control" name="image" accept="image/*">
+            </div>
+
+            <!-- Submit -->
+            <button class="btn btn-brand w-100">
+                Create Restaurant
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

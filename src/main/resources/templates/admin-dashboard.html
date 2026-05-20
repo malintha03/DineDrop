@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Admin Dashboard - DineDrop')}"></head>
+
+<style>
+
+    :root{
+        --glass-bg: rgba(20,20,20,0.35);
+        --glass-border: rgba(255,255,255,0.16);
+
+        --text-main:#ffffff;
+        --text-soft:rgba(255,255,255,0.82);
+
+        --blur:blur(20px);
+        --shadow:0 8px 32px rgba(0,0,0,0.28);
+
+        --radius:30px;
+    }
+
+    /* Background */
+
+    body{
+        min-height:100vh;
+
+        background:
+                linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.5)),
+                url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600');
+
+        background-size:cover;
+        background-position:center;
+        background-attachment:fixed;
+
+        font-family:"SF Pro Display", sans-serif;
+
+        color:white;
+
+        text-shadow:0 1px 3px rgba(0,0,0,0.45);
+
+        overflow-x:hidden;
+    }
+
+    /* Glow Effects */
+
+    body::before,
+    body::after{
+        content:'';
+        position:fixed;
+        width:320px;
+        height:320px;
+        border-radius:50%;
+        filter:blur(100px);
+        z-index:0;
+    }
+
+    body::before{
+        background:#ff9966;
+        top:-120px;
+        left:-100px;
+        opacity:0.45;
+    }
+
+    body::after{
+        background:#6dd5fa;
+        bottom:-120px;
+        right:-100px;
+        opacity:0.4;
+    }
+
+    /* Container */
+
+    .container{
+        position:relative;
+        z-index:2;
+    }
+
+    /* Typography */
+
+    h1,h2,h3,h4,h5{
+        color:white;
+        font-weight:700;
+    }
+
+    .text-muted{
+        color:rgba(255,255,255,0.75) !important;
+    }
+
+    /* Dashboard Cards */
+
+    .dash-card{
+
+        background:var(--glass-bg);
+
+        backdrop-filter:var(--blur);
+        -webkit-backdrop-filter:var(--blur);
+
+        border:1px solid var(--glass-border);
+
+        border-radius:var(--radius);
+
+        box-shadow:var(--shadow);
+
+        padding:24px;
+
+        text-align:center;
+
+        transition:0.35s ease;
+
+        height:100%;
+    }
+
+    .dash-card:hover{
+        transform:translateY(-6px) scale(1.02);
+
+        box-shadow:0 16px 40px rgba(0,0,0,0.35);
+    }
+
+    /* Labels */
+
+    .dash-label{
+        color:rgba(255,255,255,0.72);
+
+        text-transform:uppercase;
+
+        letter-spacing:1px;
+
+        font-size:13px;
+
+        margin-bottom:10px;
+    }
+
+
+
+    /* Stats */
+
+    .dash-stat{
+        font-size:40px;
+
+        font-weight:700;
+
+        color:white;
+
+        margin-bottom:10px;
+
+        text-shadow:0 2px 8px rgba(0,0,0,0.45);
+    }
+
+    /* Links */
+
+    .dash-card a{
+        text-decoration:none;
+
+        color:white !important;
+
+        font-weight:600;
+
+        transition:0.3s;
+    }
+
+    .dash-card a:hover{
+        opacity:0.8;
+    }
+
+    /* Admin Hero */
+
+    .admin-hero{
+
+        background:rgba(255,255,255,0.08);
+
+        border:1px solid rgba(255,255,255,0.12);
+
+        backdrop-filter:blur(20px);
+
+        border-radius:32px;
+
+        padding:35px;
+
+        margin-bottom:35px;
+
+        box-shadow:0 8px 32px rgba(0,0,0,0.25);
+    }
+
+    /* Responsive */
+
+    @media(max-width:768px){
+
+        .dash-stat{
+            font-size:30px;
+        }
+
+        .admin-hero{
+            padding:24px;
+        }
+    }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+    <!-- Hero -->
+
+    <div class="admin-hero">
+
+        <h2 class="mb-2">
+            🛡️ Admin Dashboard
+        </h2>
+
+        <p class="text-muted mb-0">
+            Full system overview
+        </p>
+
+    </div>
+
+    <!-- Dashboard Cards -->
+
+    <div class="row g-4">
+
+        <!-- Users -->
+
+        <div class="col-lg-2 col-md-4 col-6">
+
+            <div class="dash-card">
+
+                <div class="dash-label">
+                    Users
+                </div>
+
+                <div class="dash-stat"
+                     th:text="${usersCount}">
+                    0
+                </div>
+
+                <a th:href="@{/admin/users}">
+                    Manage →
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Restaurants -->
+
+        <div class="col-lg-2 col-md-4 col-6">
+
+            <div class="dash-card">
+
+                <div class="dash-label">
+                    Restaurants
+                </div>
+
+                <div class="dash-stat"
+                     th:text="${restaurantsCount}">
+                    0
+                </div>
+
+                <a th:href="@{/admin/restaurants}">
+                    View →
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Foods -->
+
+        <div class="col-lg-2 col-md-4 col-6">
+
+            <div class="dash-card">
+
+                <div class="dash-label">
+                    Foods
+                </div>
+
+                <div class="dash-stat"
+                     th:text="${foodsCount}">
+                    0
+                </div>
+
+                <a th:href="@{/admin/foods}">
+                    Manage →
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Orders -->
+
+        <div class="col-lg-2 col-md-4 col-6">
+
+            <div class="dash-card">
+
+                <div class="dash-label">
+                    Orders
+                </div>
+
+                <div class="dash-stat"
+                     th:text="${ordersCount}">
+                    0
+                </div>
+
+                <a th:href="@{/admin/orders}">
+                    View →
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Reviews -->
+
+        <div class="col-lg-2 col-md-4 col-6">
+
+            <div class="dash-card">
+
+                <div class="dash-label">
+                    Reviews
+                </div>
+
+                <div class="dash-stat"
+                     th:text="${reviewsCount}">
+                    0
+                </div>
+
+                <a th:href="@{/reviews}">
+                    View →
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Payments -->
+
+        <div class="col-lg-2 col-md-4 col-6">
+
+            <div class="dash-card">
+
+                <div class="dash-label">
+                    Payments
+                </div>
+
+                <div class="dash-stat"
+                     th:text="${paymentsCount}">
+                    0
+                </div>
+
+                <small class="text-muted">
+                    System Revenue
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row g-4 mt-2">
+        <div class="col-lg-4 col-md-6"><div class="dash-card">
+            <div class="dash-label">Today's Website Revenue</div>
+            <div class="dash-stat">Rs. <span th:text="${#numbers.formatDecimal(revenueToday.total,1,2)}"></span></div>
+            <small class="text-muted">Restaurants + Riders commission</small>
+        </div></div>
+        <div class="col-lg-4 col-md-6"><div class="dash-card">
+            <div class="dash-label">This Month</div>
+            <div class="dash-stat">Rs. <span th:text="${#numbers.formatDecimal(revenueMonth.total,1,2)}"></span></div>
+            <small class="text-muted" th:text="${revenueMonth.completedOrders} + ' completed orders'"></small>
+        </div></div>
+        <div class="col-lg-4 col-md-6"><div class="dash-card">
+            <div class="dash-label">All-time Revenue</div>
+            <div class="dash-stat">Rs. <span th:text="${#numbers.formatDecimal(revenueOverall.total,1,2)}"></span></div>
+            <a th:href="@{/admin/revenue}">View breakdown →</a>
+            <span> · </span>
+            <a th:href="@{/admin/settings}">Settings</a>
+        </div></div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>

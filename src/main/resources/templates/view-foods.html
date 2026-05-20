@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Browse Foods - DineDrop')}"></head>
+
+<style>
+
+
+  body{
+    min-height:100vh;
+
+    background:
+            linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)),
+            url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1600');
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+
+    color:white;
+
+    font-family:"SF Pro Display", sans-serif;
+
+    text-shadow:0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  /* glow */
+
+  body::before,
+  body::after{
+    content:'';
+    position:fixed;
+    width:320px;
+    height:320px;
+    border-radius:50%;
+    filter:blur(110px);
+    z-index:0;
+  }
+
+  body::before{
+    background:#ff9966;
+    top:-120px;
+    left:-100px;
+    opacity:0.45;
+  }
+
+  body::after{
+    background:#6dd5fa;
+    bottom:-120px;
+    right:-100px;
+    opacity:0.35;
+  }
+
+  /* container */
+
+  .container{
+    position:relative;
+    z-index:2;
+  }
+
+  /* ===== GLASS CARD ===== */
+
+  .card-food{
+
+    background:rgba(20,20,20,0.35);
+
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+
+    border:1px solid rgba(255,255,255,0.15);
+
+    border-radius:22px;
+
+    overflow:hidden;
+
+    color:white;
+
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  }
+
+  /* images */
+
+  .card-food img{
+    width:100%;
+    height:200px;
+
+    object-fit:cover;
+    object-position:center;
+
+    display:block;
+  }
+
+  /* text */
+
+  h2,h5{
+    font-weight:800;
+  }
+
+  .text-muted{
+    color:rgba(255,255,255,0.75) !important;
+  }
+
+  /* badges */
+
+  .badge-cuisine{
+    background:rgba(255,255,255,0.18);
+    color:white;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+  }
+
+  /* inputs */
+
+  .form-control{
+    background:rgba(255,255,255,0.10) !important;
+    border:1px solid rgba(255,255,255,0.15) !important;
+    color:white !important;
+    border-radius:12px;
+  }
+
+  .form-control:focus{
+    border-color:rgba(255,255,255,0.35) !important;
+    box-shadow:none;
+  }
+
+  /* buttons */
+
+  .btn-brand{
+    background:rgba(255,255,255,0.18);
+    border:1px solid rgba(255,255,255,0.18);
+    color:white !important;
+    border-radius:14px;
+    font-weight:600;
+  }
+
+  .btn-brand:hover{
+    background:rgba(255,255,255,0.28);
+  }
+
+  .btn-outline-brand{
+    border-radius:14px;
+    color:white !important;
+  }
+
+  /* alerts */
+
+  .alert{
+    border:0;
+    border-radius:14px;
+    backdrop-filter:blur(15px);
+    color:white;
+  }
+
+  .alert-success{
+    background:rgba(40,167,69,0.2);
+  }
+
+  /* qty controls */
+
+  .input-group button{
+    color:white;
+    border-color:rgba(255,255,255,0.2);
+  }
+
+  /* empty state */
+
+  .empty{
+    text-align:center;
+    padding:40px;
+    color:rgba(255,255,255,0.8);
+  }
+
+  /* responsive */
+
+  @media(max-width:768px){
+
+    .card-food img{
+      width:100%;
+      height:180px;
+
+      object-fit:cover;
+      object-position:center;
+    }
+  }
+
+</style>
+
+<body>
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container py-5">
+
+  <!-- MESSAGE -->
+
+  <div th:if="${msg}"
+       class="alert alert-success d-flex justify-content-between align-items-center">
+
+    <span th:text="${msg}"></span>
+
+    <a th:href="@{/cart}"
+       class="btn btn-sm btn-dark rounded-pill">
+      View Cart →
+    </a>
+
+  </div>
+
+  <!-- RESTAURANT HEADER -->
+
+  <div th:if="${restaurant != null}" class="mb-4">
+
+    <h2 th:text="${restaurant.name}"></h2>
+
+    <p class="text-muted"
+       th:text="${restaurant.description}"></p>
+
+    <span class="badge-cuisine"
+          th:text="${restaurant.cuisine}"></span>
+
+  </div>
+
+  <!-- ALL FOODS HEADER -->
+
+  <div th:if="${restaurant == null}">
+
+    <h2>🍽️ All Foods</h2>
+
+    <form class="mb-4"
+          th:action="@{/foods}"
+          method="get">
+
+      <div class="input-group">
+
+        <input class="form-control"
+               name="q"
+               th:value="${q}"
+               placeholder="Search foods...">
+
+        <button class="btn btn-brand">
+          Search
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <!-- FOOD GRID -->
+
+  <div class="row g-4">
+
+    <div class="col-md-4"
+         th:each="f : ${foods}">
+
+      <div class="card-food h-100">
+
+        <img th:src="${f.image != null and !f.image.isEmpty()}
+                             ? @{'/uploads/' + ${f.image}}
+                             : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600'">
+
+        <div class="p-3">
+
+          <span class="badge-cuisine" th:text="${f.category}"></span>
+
+          <h5 class="mt-2" th:text="${f.name}"></h5>
+
+          <p class="mb-1" style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+            🏠 <span th:text="${restaurantService.byId(f.restaurantId).name}"></span>
+          </p>
+
+          <p class="text-muted small" th:text="${f.description}"></p>
+
+          <p class="fw-bold">
+            Rs. <span th:text="${#numbers.formatDecimal(f.price,1,2)}"></span>
+          </p>
+
+          <!-- CART -->
+
+          <form th:action="@{/cart/add}"
+                method="post"
+                th:if="${session.user != null and session.user.role == 'CUSTOMER'}">
+
+            <input type="hidden"
+                   name="foodId"
+                   th:value="${f.id}">
+
+            <input class="form-control mb-2"
+                   type="number"
+                   name="qty"
+                   value="1"
+                   min="1">
+
+            <button class="btn btn-brand w-100">
+              Add to Cart 🛒
+            </button>
+
+            <button type="submit"
+                    th:formaction="@{/order/buy-now}"
+                    class="btn btn-outline-brand w-100 mt-2">
+              Buy Now ⚡
+            </button>
+
+          </form>
+
+          <a th:if="${session.user == null}"
+             th:href="@{/login}"
+             class="btn btn-outline-brand w-100">
+            Login to Order
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- EMPTY -->
+
+    <div class="col-12 empty"
+         th:if="${#lists.isEmpty(foods)}">
+
+      🍽️ No foods found
+
+    </div>
+
+  </div>
+
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

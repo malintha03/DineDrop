@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DineDrop | Gourmet Delivery</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+            --primary-gold:#D4AF37;
+            --dark:#111111;
+            --soft:#f8f9fa;
+        }
+
+        body{
+            margin:0;
+            font-family:'Plus Jakarta Sans',sans-serif;
+            background:var(--soft);
+            color:var(--dark);
+            overflow-x:hidden;
+        }
+
+        /* NAVBAR */
+        .navbar{
+            position:absolute;
+            width:100%;
+            z-index:1000;
+            padding:20px 0;
+            background:linear-gradient(to bottom,rgba(0,0,0,.55),transparent);
+        }
+
+        .navbar-brand{
+            font-family:'Playfair Display',serif;
+            color:white !important;
+            font-size:1.8rem;
+            letter-spacing:-1px;
+        }
+
+        /* HERO */
+        .hero{
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            background:
+                    linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.65)),
+                    url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=2070');
+            background-size:cover;
+            background-position:center;
+            color:white;
+            padding:120px 0 80px;
+        }
+
+        .hero h1{
+            font-family:'Playfair Display',serif;
+            font-size:clamp(3rem,7vw,5rem);
+            line-height:1.1;
+            margin-bottom:20px;
+        }
+
+        .hero h1 span{
+            color:var(--primary-gold);
+        }
+
+        .hero p{
+            font-size:1.1rem;
+            opacity:.9;
+            max-width:550px;
+        }
+
+        .hero-img{
+            width:100%;
+            max-width:520px;
+            border-radius:30px;
+            box-shadow:0 20px 50px rgba(0,0,0,.4);
+            transition:.4s ease;
+        }
+
+        .hero-img:hover{
+            transform:scale(1.03);
+        }
+
+        /* BUTTONS */
+        .btn-brand{
+            background:var(--primary-gold);
+            border:none;
+            color:white;
+            border-radius:50px;
+            padding:14px 28px;
+            font-weight:600;
+            transition:.3s;
+            box-shadow:0 5px 18px rgba(212,175,55,.35);
+        }
+
+        .btn-brand:hover{
+            background:#b8962d;
+            transform:translateY(-3px);
+            color:white;
+        }
+
+        .btn-outline-brand{
+            border:2px solid white;
+            color:white;
+            border-radius:50px;
+            padding:14px 28px;
+            font-weight:600;
+            transition:.3s;
+        }
+
+        .btn-outline-brand:hover{
+            background:white;
+            color:black;
+            transform:translateY(-3px);
+        }
+
+        /* BADGES */
+        .badge-cuisine{
+            background:rgba(212,175,55,.15);
+            color:var(--primary-gold);
+            padding:10px 18px;
+            border-radius:50px;
+            font-size:.85rem;
+            font-weight:600;
+            backdrop-filter:blur(10px);
+        }
+
+        /* SECTIONS */
+        section{
+            padding:100px 0;
+        }
+
+        .section-title{
+            font-family:'Playfair Display',serif;
+            font-size:2.7rem;
+            margin-bottom:60px;
+        }
+
+        .section-title small{
+            display:block;
+            font-size:1rem;
+            text-transform:uppercase;
+            letter-spacing:3px;
+            color:var(--primary-gold);
+            margin-bottom:10px;
+            font-family:'Plus Jakarta Sans',sans-serif;
+        }
+
+        .section-title::after{
+            content:'';
+            display:block;
+            width:60px;
+            height:3px;
+            background:var(--primary-gold);
+            margin:18px auto 0;
+        }
+
+        /* CARDS */
+        .card-rest{
+            background:white;
+            border-radius:25px;
+            overflow:hidden;
+            transition:.4s;
+            box-shadow:0 10px 30px rgba(0,0,0,.08);
+            border:none;
+        }
+
+        .card-rest:hover{
+            transform:translateY(-12px);
+            box-shadow:0 18px 40px rgba(0,0,0,.12);
+        }
+
+        .card-rest img{
+            height:250px;
+            object-fit:cover;
+            transition:.5s;
+        }
+
+        .card-rest:hover img{
+            transform:scale(1.08);
+        }
+
+        .card-body{
+            padding:25px;
+        }
+
+        .card-body h5{
+            font-weight:700;
+        }
+
+        /* REVIEW CARD */
+        .dash-card{
+            background:white;
+            border-radius:25px;
+            padding:35px;
+            box-shadow:0 10px 30px rgba(0,0,0,.08);
+            transition:.3s;
+            height:100%;
+        }
+
+        .dash-card:hover{
+            transform:translateY(-8px);
+        }
+
+        .stars{
+            color:var(--primary-gold);
+            font-size:1.2rem;
+            letter-spacing:3px;
+        }
+
+        /* EMPTY */
+        .empty{
+            text-align:center;
+            padding:50px 20px;
+            background:white;
+            border-radius:25px;
+            box-shadow:0 10px 30px rgba(0,0,0,.05);
+        }
+
+        .emoji{
+            font-size:4rem;
+            margin-bottom:20px;
+        }
+
+        footer{
+            background:#111;
+            color:white;
+            padding:40px 0;
+        }
+
+        @media(max-width:991px){
+            .hero{
+                text-align:center;
+            }
+
+            .hero p{
+                margin:auto;
+            }
+
+            .hero-img{
+                margin-top:40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <!-- LEFT SIDE -->
+        <div class="d-flex align-items-center gap-3">
+
+            <!-- LOGO -->
+            <a href="/"
+               class="navbar-brand text-decoration-none mb-0">
+                🍽 DINEDROP
+            </a>
+
+            <!-- HOME -->
+            <a href="/"
+               class="btn btn-outline-light rounded-pill px-4">
+                Home
+            </a>
+
+            <!-- BROWSE FOODS -->
+            <a th:href="@{/foods}"
+               class="btn btn-outline-light rounded-pill px-4">
+                Browse Foods
+            </a>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="d-flex gap-3 align-items-center">
+
+            <!-- LOGIN -->
+            <a th:if="${session.user == null}"
+               th:href="@{/login}"
+               class="btn btn-outline-light rounded-pill px-4">
+                Login
+            </a>
+
+            <!-- SIGNUP -->
+            <a th:if="${session.user == null}"
+               th:href="@{/register}"
+               class="btn btn-brand rounded-pill px-4">
+                Sign Up
+            </a>
+
+            <!-- LOGGED IN: DASHBOARD + PROFILE -->
+            <a th:if="${session.user != null}"
+               th:href="${session.user.role == 'CUSTOMER'} ? @{/customer} :
+                  (${session.user.role == 'OWNER'} ? @{/owner} :
+                  (${session.user.role == 'RIDER'} ? @{/rider} : @{/admin}))"
+               class="btn btn-outline-light rounded-pill px-4">
+                Dashboard
+            </a>
+
+            <div class="dropdown" th:if="${session.user != null}">
+                <a class="btn btn-brand rounded-pill px-4 dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                    👤 <span th:text="${session.user.name}">User</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" th:href="@{/profile}">My Profile</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" th:href="@{/logout}">Logout</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6">
+
+                <span class="badge-cuisine mb-3 d-inline-block">
+                    🚀 Fast delivery in 30 mins
+                </span>
+
+                <h1>
+                    Crave it. Tap it.
+                    <span>Get it delivered.</span>
+                </h1>
+
+                <p class="mt-3">
+                    DineDrop brings the best restaurants in your city to your doorstep.
+                    Browse, order, pay — all in one place.
+                </p>
+
+                <!-- KEEPING ALL FUNCTIONS -->
+                <div class="d-flex gap-3 mt-4 flex-wrap">
+
+                    <a th:if="${session.user == null}"
+                       th:href="@{/register(role='CUSTOMER')}"
+                       class="btn btn-brand btn-lg">
+                        Order Now 🍕
+                    </a>
+
+                    <a th:if="${session.user != null and session.user.role == 'CUSTOMER'}"
+                       th:href="@{/customer}"
+                       class="btn btn-brand btn-lg">
+                        Order Now 🍕
+                    </a>
+
+                    <a th:if="${session.user != null and session.user.role == 'OWNER'}"
+                       th:href="@{/owner}"
+                       class="btn btn-brand btn-lg">
+                        Go to Dashboard 🍕
+                    </a>
+
+                    <a th:if="${session.user != null and session.user.role == 'RIDER'}"
+                       th:href="@{/rider}"
+                       class="btn btn-brand btn-lg">
+                        Go to Dashboard 🍕
+                    </a>
+
+                    <a th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                       th:href="@{/admin}"
+                       class="btn btn-brand btn-lg">
+                        Go to Admin 🍕
+                    </a>
+
+                    <a th:if="${session.user == null}"
+                       th:href="@{/register(role='OWNER')}"
+                       class="btn btn-outline-brand btn-lg">
+                        List Your Restaurant
+                    </a>
+
+                    <a th:if="${session.user == null}"
+                       th:href="@{/register(role='RIDER')}"
+                       class="btn btn-outline-brand btn-lg">
+                        Join as Rider 🛵
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6 text-center">
+                <img class="hero-img"
+                     alt="Delicious food"
+                     src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=900&q=80">
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- RESTAURANTS -->
+<section>
+    <div class="container">
+
+        <h2 class="section-title text-center">
+            <small>Featured</small>
+            Popular Restaurants
+        </h2>
+
+        <div class="row g-4"
+             th:if="${not #lists.isEmpty(restaurants)}">
+
+            <div class="col-md-4"
+                 th:each="r : ${restaurants}">
+
+                <div class="card-rest h-100">
+
+                    <img class="card-img-top"
+                         th:src="${r.image != null and !r.image.isEmpty()} ? @{'/uploads/' + ${r.image}} : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600'"
+                         alt="">
+
+                    <div class="card-body">
+
+                        <span class="badge-cuisine"
+                              th:text="${r.cuisine}">
+                            Cuisine
+                        </span>
+
+                        <h5 class="mt-3 mb-2"
+                            th:text="${r.name}">
+                            Restaurant
+                        </h5>
+
+                        <p class="text-muted small mb-3">
+                            📍 <span th:text="${r.city}">City</span>
+                        </p>
+
+                        <a th:href="@{/foods(restaurantId=${r.id})}"
+                           class="btn btn-brand btn-sm">
+                            View Menu
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="empty"
+             th:if="${#lists.isEmpty(restaurants)}">
+
+            <div class="emoji">🍽️</div>
+
+            <p>
+                No restaurants yet.
+                Be the first owner —
+                <a th:href="@{/register(role='OWNER')}">
+                    add yours
+                </a>!
+            </p>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="bg-white">
+
+    <div class="container">
+
+        <h2 class="section-title text-center">
+            <small>Reviews</small>
+            What Our Customers Say
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-md-4"
+                 th:each="rv, rvStat : ${reviews}"
+                 th:if="${rvStat.index < 3}">
+
+                <div class="dash-card">
+
+                    <div class="stars"
+                         th:text="${'★★★★★'.substring(0, rv.rating)}">
+                        ★★★★★
+                    </div>
+
+                    <p class="mt-3"
+                       th:text="${rv.comment}">
+                        Great!
+                    </p>
+
+                    <small class="text-muted">
+                        — <span th:text="${rv.customerName}">
+                            Customer
+                          </span>
+                    </small>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 empty"
+                 th:if="${#lists.isEmpty(reviews)}">
+
+                <div class="emoji">💬</div>
+
+                <p>
+                    No reviews yet — order something delicious!
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+<section class="container py-5">
+    <h3 class="mb-3">🗺️ Find DineDrop Stores Near You</h3>
+    <iframe class="w-100 rounded" style="height:380px;border:0" loading="lazy"
+            src="https://maps.google.com/maps?q=restaurants+Sri+Lanka&output=embed"></iframe>
+</section>
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<div th:replace="~{fragments :: scripts}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
