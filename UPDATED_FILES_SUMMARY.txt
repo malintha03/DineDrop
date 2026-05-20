@@ -1,0 +1,47 @@
+Updated project for requested fixes only.
+
+Modified files:
+- src/main/java/food_delivery_system/controller/AuthController.java
+  - Removed normal-login ADMIN handling by forcing admin users to use the separate Admin Portal.
+  - Added customer current city saving during customer login when selected.
+  - Added /customer/city POST endpoint so customer can update current city from browse pages.
+
+- src/main/resources/templates/login.html
+  - Removed Admin role button from the normal role selector.
+  - Kept the existing Admin Portal link at the bottom.
+  - Added customer current city dropdown shown only when Customer role is selected.
+  - Added dropdown option text readability fix without changing theme.
+
+- src/main/resources/templates/register.html
+  - Fixed dropdown option text visibility/readability for district and vehicle dropdowns.
+
+- src/main/resources/templates/fragments.html
+  - Added global dropdown option readability fix.
+  - Existing Browse Foods/Browse Restaurants navigation remains unchanged.
+
+- src/main/resources/static/css/style.css
+  - Added global native dropdown option text visibility fix.
+
+- src/main/resources/templates/profile.html
+  - Uses the existing customer district/city dropdown and now benefits from the global dropdown readability fix.
+
+- src/main/resources/templates/view-foods.html
+  - Added customer current city selector on Browse Foods.
+  - Existing city-based food filtering remains active.
+  - Restaurant name remains shown under each food item.
+
+- src/main/resources/templates/restaurants.html
+  - Added customer current city selector on Browse Restaurants.
+  - Existing city-based restaurant filtering remains active.
+  - Customer restaurant cards remain clean without order count.
+
+- src/main/resources/templates/view-orders.html
+  - Customer Order History now shows restaurant name for each order.
+  - Existing ordered foods, status, date/time, completed time, and rider info remain unchanged.
+
+New files added:
+- None.
+
+Notes:
+- No UI redesign, theme/color/layout changes, or workflow restructuring were made.
+- Maven could not be executed in the sandbox because the Maven wrapper could not download Maven from repo.maven.apache.org.
