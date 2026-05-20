@@ -1,0 +1,7 @@
+U-ADMIN|Admin|admin@dinedrop.com|admin123|0000000000|ADMIN|HQ|||
+U-177869408694392|saman|saman@gmail.com|Saman123|0712545789|CUSTOMER||||U-1778739256820145|customer|customer@gmail.com|1234|0770200367|CUSTOMER||||
+U-1778739321739758|owner|owner@gmail.com|1234|0714463483|OWNER|Kurunegala|||
+U-1778739587912863|customer1|cus1@gmail.com|1234|0712545789|CUSTOMER||||
+U-1779098538462389|Duminda|duminda@gmail.com|Duminda123|0712545789|OWNER|Kurunegala|||
+U-1779174681849603|customer1|customer1@gmail.com|customer1|0712545789|CUSTOMER||||
+U-1778755171602233|ape kema adu milata|amit@foodie.com|cust123|0770002468|OWNER|Kurunegala|||
