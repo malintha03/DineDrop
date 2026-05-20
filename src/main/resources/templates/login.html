@@ -135,6 +135,13 @@
       color:#888;
     }
 
+    select.form-control option, .form-select option{
+      background:#ffffff !important;
+      color:#111111 !important;
+      text-shadow:none !important;
+    }
+
+
     /* BUTTON */
     .btn-login{
       height:58px;
@@ -315,20 +322,9 @@
         <!-- ROLE SELECT -->
         <div class="role-selector">
 
-          <div class="role-item active"
-               onclick="setRole('CUSTOMER', this)">
-            Customer
-          </div>
-
-          <div class="role-item"
-               onclick="setRole('OWNER', this)">
-            Owner
-          </div>
-
-          <div class="role-item"
-               onclick="setRole('RIDER', this)">
-            Rider
-          </div>
+          <div class="role-item" data-role="CUSTOMER" onclick="setRole('CUSTOMER', this)">Customer</div>
+          <div class="role-item" data-role="OWNER" onclick="setRole('OWNER', this)">Owner</div>
+          <div class="role-item" data-role="RIDER" onclick="setRole('RIDER', this)">Rider</div>
 
         </div>
 
@@ -336,7 +332,7 @@
         <input type="hidden"
                name="role"
                id="selectedRole"
-               value="CUSTOMER">
+               th:value="${role != null and !role.isBlank()} ? ${role} : 'CUSTOMER'">
 
         <!-- EMAIL -->
         <div class="mb-4">
@@ -351,6 +347,16 @@
                  placeholder="name@example.com"
                  required>
 
+        </div>
+
+
+        <!-- Customer Current City -->
+        <div class="mb-4" id="loginCityGroup">
+          <label class="form-label">Current City</label>
+          <select class="form-control" name="city" id="loginCityInput">
+            <option value="">Keep saved city / select city</option>
+            <option th:each="d : ${districts}" th:value="${d}" th:text="${d}"></option>
+          </select>
         </div>
 
         <!-- PASSWORD -->
@@ -452,7 +458,16 @@
     });
 
     element.classList.add('active');
+
+    const cityGroup = document.getElementById('loginCityGroup');
+    if (cityGroup) cityGroup.style.display = role === 'CUSTOMER' ? 'block' : 'none';
   }
+
+  window.addEventListener('DOMContentLoaded', function(){
+    const selected = document.getElementById('selectedRole').value || 'CUSTOMER';
+    const item = document.querySelector('.role-item[data-role="' + selected + '"]') || document.querySelector('.role-item[data-role="CUSTOMER"]');
+    if (item) setRole(item.dataset.role, item);
+  });
 
 </script>
 

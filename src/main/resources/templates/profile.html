@@ -245,6 +245,15 @@
                                th:value="${user.phone}">
                     </div>
 
+
+                    <div th:if="${user.role == 'CUSTOMER'}" class="mb-3">
+                        <label>Current District</label>
+                        <select class="form-select" name="city" required>
+                            <option value="">Select district</option>
+                            <option th:each="d : ${districts}" th:value="${d}" th:text="${d}" th:selected="${d.equalsIgnoreCase(user.city)}"></option>
+                        </select>
+                    </div>
+
                     <div th:if="${user.role == 'RIDER'}">
                         <div class="mb-3">
                             <label>Service City</label>

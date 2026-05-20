@@ -29,10 +29,20 @@ public class AuthController {
     // Handles home page request
     // Model is used to send data from controller to view
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model, HttpSession session) {
 
-        // Fetch all restaurants from service layer
-        model.addAttribute("restaurants", restaurantService.all());
+        User currentUser = (User) session.getAttribute("user");
+        java.util.List<food_delivery_system.model.Restaurant> visibleRestaurants = restaurantService.all();
+        if (currentUser != null && "CUSTOMER".equalsIgnoreCase(currentUser.getRole())
+                && currentUser.getCity() != null && !currentUser.getCity().isBlank()) {
+            String city = currentUser.getCity().trim();
+            visibleRestaurants = visibleRestaurants.stream()
+                    .filter(r -> city.equalsIgnoreCase(r.getCity() == null ? "" : r.getCity().trim()))
+                    .toList();
+        }
+
+        // Fetch city-matched restaurants from service layer
+        model.addAttribute("restaurants", visibleRestaurants);
 
         // Fetch all reviews from service layer
         model.addAttribute("reviews", reviewService.all());
@@ -45,8 +55,10 @@ public class AuthController {
     @GetMapping("/login")
     public String loginPage(@RequestParam(required=false) String role, Model model) {
 
-        // Adds role data to frontend
-        model.addAttribute("role", role == null ? "" : role);
+        // Adds role data to frontend. Admin uses the separate admin portal.
+        String loginRole = role == null ? "" : role.toUpperCase();
+        if ("ADMIN".equalsIgnoreCase(loginRole)) loginRole = "CUSTOMER";
+        model.addAttribute("role", loginRole);
 
         return "login";
     }
@@ -54,6 +66,8 @@ public class AuthController {
     // Handles login form submission
     @PostMapping("/login")
     public String doLogin(@RequestParam String email, @RequestParam String password,
+                          @RequestParam(required=false) String role,
+                          @RequestParam(required=false) String city,
                           HttpSession session, Model model) {
 
         // Calls service layer to validate login
@@ -62,7 +76,28 @@ public class AuthController {
         // Basic validation and error handling
         if (u == null) {
             model.addAttribute("error", "Invalid credentials");
+            model.addAttribute("role", role == null ? "" : role);
             return "login";
+        }
+
+        String selectedRole = role == null ? "" : role.trim();
+        if (selectedRole.isBlank()) selectedRole = "CUSTOMER";
+        // Normal login page must not authenticate ADMIN; admin has separate login page.
+        if ("ADMIN".equalsIgnoreCase(selectedRole)) {
+            model.addAttribute("error", "Please use the Admin Portal for admin login.");
+            model.addAttribute("role", "CUSTOMER");
+            return "login";
+        }
+        if (!u.getRole().equalsIgnoreCase(selectedRole)) {
+            model.addAttribute("error", "Selected role does not match this account. Please choose the correct role.");
+            model.addAttribute("role", selectedRole);
+            return "login";
+        }
+
+        // Save selected current city for customer login when provided
+        if (city != null && !city.isBlank() && "CUSTOMER".equalsIgnoreCase(u.getRole())) {
+            u.setCity(city.trim());
+            adminUpdate(u);
         }
 
         // Session used to store logged-in user details
@@ -130,6 +165,12 @@ public class AuthController {
                 licenseNumber == null ? "" : licenseNumber,
                 licensePlate == null ? "" : licensePlate);
 
+        if ("CUSTOMER".equalsIgnoreCase(u.getRole()) && (u.getCity() == null || u.getCity().isBlank())) {
+            model.addAttribute("error", "Please select your district");
+            model.addAttribute("role", role);
+            return "register";
+        }
+
         // Calls service layer to register user
         String err = authService.register(u);
 
@@ -195,6 +236,12 @@ public class AuthController {
 
         if (city != null) u.setCity(city);
 
+        if ("CUSTOMER".equalsIgnoreCase(u.getRole()) && (u.getCity() == null || u.getCity().isBlank())) {
+            model.addAttribute("user", u);
+            model.addAttribute("error", "Please select your district");
+            return "profile";
+        }
+
         if (vehicle != null) u.setVehicle(vehicle);
 
         // Conditional logic for rider role
@@ -229,6 +276,25 @@ public class AuthController {
         session.setAttribute("user", u);
 
         return "redirect:/profile?saved=1";
+    }
+
+
+    // Updates customer current city from browse pages without changing page design
+    @PostMapping("/customer/city")
+    public String updateCustomerCity(@RequestParam String city, HttpSession session,
+                                     jakarta.servlet.http.HttpServletRequest request) {
+
+        User u = (User) session.getAttribute("user");
+        if (u == null || !"CUSTOMER".equalsIgnoreCase(u.getRole())) return "redirect:/login";
+
+        if (city != null && !city.isBlank()) {
+            u.setCity(city.trim());
+            adminUpdate(u);
+            session.setAttribute("user", u);
+        }
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null && !referer.isBlank() ? referer : "/foods");
     }
 
     // Handles profile deletion

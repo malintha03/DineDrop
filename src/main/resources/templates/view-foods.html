@@ -192,6 +192,18 @@
 
 <div class="container py-5">
 
+  <form th:if="${session.user != null and session.user.role == 'CUSTOMER'}"
+        method="post" th:action="@{/customer/city}"
+        class="mb-4 d-flex flex-wrap gap-2 align-items-center">
+    <label class="small text-muted mb-0">Current City</label>
+    <select class="form-control" name="city" style="max-width:260px;">
+      <option value="">Select city</option>
+      <option th:each="d : ${districts}" th:value="${d}" th:text="${d}"
+              th:selected="${customerCity != null and d.equalsIgnoreCase(customerCity)}"></option>
+    </select>
+    <button class="btn btn-brand btn-sm">Change current city</button>
+  </form>
+
   <!-- MESSAGE -->
 
   <div th:if="${msg}"
@@ -245,6 +257,19 @@
 
     </form>
 
+    <div class="d-flex flex-wrap gap-2 mb-4" th:if="${categories != null and !#lists.isEmpty(categories)}">
+      <a class="btn btn-outline-brand btn-sm" th:href="@{/foods}">All Categories</a>
+      <a class="btn btn-outline-brand btn-sm"
+         th:each="cat : ${categories}"
+         th:classappend="${category != null and category.equalsIgnoreCase(cat)} ? ' active' : ''"
+         th:href="@{/foods(category=${cat})}"
+         th:text="${cat}">Category</a>
+    </div>
+
+    <p class="small text-muted" th:if="${customerCity != null and !customerCity.isBlank()}">
+      Showing foods available in <strong th:text="${customerCity}"></strong>.
+    </p>
+
   </div>
 
   <!-- FOOD GRID -->
@@ -266,8 +291,12 @@
 
           <h5 class="mt-2" th:text="${f.name}"></h5>
 
-          <p class="mb-1" style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
-            🏠 <span th:text="${restaurantService.byId(f.restaurantId).name}"></span>
+          <p class="mb-1" style="font-size: 0.85rem; color: rgba(255,255,255,0.7);"
+             th:with="res=${restaurantService.byId(f.restaurantId)}">
+            🏠 <a th:if="${res != null}" th:href="@{'/restaurants/' + ${res.id}}"
+                  style="color:rgba(255,255,255,0.86); text-decoration:underline;"
+                  th:text="${res.name}"></a>
+            <span th:if="${res == null}">Restaurant unavailable</span>
           </p>
 
           <p class="text-muted small" th:text="${f.description}"></p>

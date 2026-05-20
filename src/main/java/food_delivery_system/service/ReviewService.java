@@ -53,6 +53,13 @@ public class ReviewService {
         return repo.findByRestaurant(rid);
     }
 
+    // Average rating for a restaurant
+    public double averageForRestaurant(String rid) {
+        java.util.List<Review> reviews = byRestaurant(rid);
+        if (reviews.isEmpty()) return 0.0;
+        return reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
+    }
+
     // Delete review using ID
     public void delete(String id) {
 

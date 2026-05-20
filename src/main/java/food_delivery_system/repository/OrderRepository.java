@@ -59,7 +59,9 @@ public class OrderRepository {
                 o.getRestaurantAddress(), o.getRestaurantCity(),
                 // v2 fields (positions 18-23)
                 o.getFoodCost(), o.getWebsiteCommission(), o.getRiderWebsiteFee(),
-                o.getRiderEarning(), o.getDiscount(), o.getCouponCode());
+                o.getRiderEarning(), o.getDiscount(), o.getCouponCode(),
+                // v3 field (position 24)
+                o.getCompletedAt());
     }
     private Order parse(String l) {
         String[] p = FileUtil.split(l);
@@ -72,9 +74,11 @@ public class OrderRepository {
         try{rwf=Double.parseDouble(g(p,20));}catch(Exception ignored){}
         try{re=Double.parseDouble(g(p,21));}catch(Exception ignored){}
         try{disc=Double.parseDouble(g(p,22));}catch(Exception ignored){}
-        return new Order(g(p,0),g(p,1),g(p,2),g(p,3),sub,fee,tot,g(p,7),g(p,8),g(p,9),g(p,10),g(p,11),
+        Order o = new Order(g(p,0),g(p,1),g(p,2),g(p,3),sub,fee,tot,g(p,7),g(p,8),g(p,9),g(p,10),g(p,11),
                 g(p,12),g(p,13),g(p,14),g(p,15),g(p,16),g(p,17),
                 foodCost, wc, rwf, re, disc, g(p,23));
+        o.setCompletedAt(g(p,24));
+        return o;
     }
     private static String g(String[] a, int i){ return i<a.length? a[i] : ""; }
 }

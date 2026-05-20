@@ -275,6 +275,12 @@
                 Browse Foods
             </a>
 
+            <!-- BROWSE RESTAURANTS -->
+            <a th:href="@{/restaurants}"
+               class="btn btn-outline-light rounded-pill px-4">
+                Browse Restaurants
+            </a>
+
         </div>
 
         <!-- RIGHT SIDE -->
@@ -405,7 +411,7 @@
 
         <h2 class="section-title text-center">
             <small>Featured</small>
-            Popular Restaurants
+            Browse Restaurants
         </h2>
 
         <div class="row g-4"
@@ -436,10 +442,16 @@
                             📍 <span th:text="${r.city}">City</span>
                         </p>
 
-                        <a th:href="@{/foods(restaurantId=${r.id})}"
-                           class="btn btn-brand btn-sm">
-                            View Menu
-                        </a>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a th:href="@{'/restaurants/' + ${r.id}}"
+                               class="btn btn-brand btn-sm">
+                                View Restaurant
+                            </a>
+                            <a th:href="@{/foods(restaurantId=${r.id})}"
+                               class="btn btn-outline-brand btn-sm">
+                                View Menu
+                            </a>
+                        </div>
 
                     </div>
 

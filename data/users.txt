@@ -1,3 +1,6 @@
+U-ADMIN|Admin|admin@foodiego.com|admin123|0000000000|ADMIN|HQ|||
+U-177869408694392|saman|saman@gmail.com|Saman123|0712545789|CUSTOMER||||
+U-ADMIN|Admin|admin@foodiego.com|admin123|0000000000|ADMIN|HQ|||
 U-ADMIN|Admin|admin@dinedrop.com|admin123|0000000000|ADMIN|HQ|||
 U-177869408694392|saman|saman@gmail.com|Saman123|0712545789|CUSTOMER||||U-1778739256820145|customer|customer@gmail.com|1234|0770200367|CUSTOMER||||
 U-1778739321739758|owner|owner@gmail.com|1234|0714463483|OWNER|Kurunegala|||

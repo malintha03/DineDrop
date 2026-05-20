@@ -91,7 +91,7 @@
 
                 <td th:text="${r.id}"></td>
 
-                <td th:text="${r.name}"></td>
+                <td><a class="text-warning fw-bold" th:href="@{'/admin/restaurants/' + ${r.id}}" th:text="${r.name}"></a></td>
 
                 <td th:text="${r.city}"></td>
 

@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.*;
 
 // @Controller annotation marks this class as a Spring MVC Controller handles HTTP requests and responses in MVC architecture
 @Controller
@@ -65,21 +66,43 @@ public class FoodController {
     // @GetMapping maps HTTP GET request to this method
     @GetMapping("/foods")
     public String viewFoods(@RequestParam(required=false) String q,
-                            @RequestParam(required=false) String restaurantId, Model model) {
+                            @RequestParam(required=false) String restaurantId,
+                            @RequestParam(required=false) String category,
+                            HttpSession session, Model model) {
+
+        User currentUser = (User) session.getAttribute("user");
+        String customerCity = currentUser != null && "CUSTOMER".equalsIgnoreCase(currentUser.getRole())
+                ? (currentUser.getCity() == null ? "" : currentUser.getCity().trim()) : "";
+
+        List<Restaurant> visibleRestaurants = restaurantService.all();
+        if (!customerCity.isBlank()) {
+            visibleRestaurants = visibleRestaurants.stream()
+                    .filter(r -> customerCity.equalsIgnoreCase(r.getCity() == null ? "" : r.getCity().trim()))
+                    .toList();
+        }
+        Set<String> visibleRestaurantIds = new HashSet<>();
+        for (Restaurant r : visibleRestaurants) visibleRestaurantIds.add(r.getId());
+
+        List<Food> foods;
 
         // Checks whether foods are filtered by restaurant
         if (restaurantId != null && !restaurantId.isBlank()) {
 
-            // Adds food list to Model object for frontend rendering
-            model.addAttribute("foods", foodService.byRestaurant(restaurantId));
+            Restaurant selectedRestaurant = restaurantService.byId(restaurantId);
+            if (!customerCity.isBlank() && (selectedRestaurant == null
+                    || !customerCity.equalsIgnoreCase(selectedRestaurant.getCity() == null ? "" : selectedRestaurant.getCity().trim()))) {
+                foods = java.util.Collections.emptyList();
+                selectedRestaurant = null;
+            } else {
+                foods = foodService.byRestaurant(restaurantId);
+            }
 
-            // Sends restaurant object to view page
-            model.addAttribute("restaurant", restaurantService.byId(restaurantId));
+            model.addAttribute("restaurant", selectedRestaurant);
 
         } else if (q != null) {
 
             // Search functionality using service layer
-            model.addAttribute("foods", foodService.search(q));
+            foods = foodService.search(q);
 
             // Sends search query back to frontend
             model.addAttribute("q", q);
@@ -87,8 +110,34 @@ public class FoodController {
         } else {
 
             // Retrieves all food items
-            model.addAttribute("foods", foodService.all());
+            foods = foodService.all();
         }
+
+        if (!visibleRestaurantIds.isEmpty()) {
+            foods = foods.stream().filter(f -> visibleRestaurantIds.contains(f.getRestaurantId())).toList();
+        } else if (!customerCity.isBlank()) {
+            foods = java.util.Collections.emptyList();
+        }
+
+        List<String> categories = foodService.all().stream()
+                .filter(f -> visibleRestaurantIds.isEmpty() || visibleRestaurantIds.contains(f.getRestaurantId()))
+                .map(Food::getCategory)
+                .filter(c -> c != null && !c.isBlank())
+                .distinct()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
+
+        if (category != null && !category.isBlank()) {
+            String selectedCategory = category.trim();
+            foods = foods.stream()
+                    .filter(f -> selectedCategory.equalsIgnoreCase(f.getCategory() == null ? "" : f.getCategory().trim()))
+                    .toList();
+            model.addAttribute("category", selectedCategory);
+        }
+
+        model.addAttribute("foods", foods);
+        model.addAttribute("categories", categories);
+        model.addAttribute("customerCity", customerCity);
 
         // Sends restaurant service to Thymeleaf view
         model.addAttribute("restaurantService", restaurantService);

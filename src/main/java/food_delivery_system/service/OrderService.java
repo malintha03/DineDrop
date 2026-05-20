@@ -104,23 +104,79 @@ public class OrderService {
     public List<Order> activeByRider(String rid)   { return byRider(rid).stream().filter(Order::isActive).toList(); }
     public List<Order> completedByRider(String rid){ return byRider(rid).stream().filter(Order::isCompleted).toList(); }
 
-    public void updateStatus(String orderId, String status) {
+    public boolean updateStatus(String orderId, String status) {
         Order o = repo.findById(orderId);
-        if (o == null) return;
-        o.setStatus(status);
-        // Re-compute rider payout snapshot when delivered (in case settings changed).
-        if ("DELIVERED".equalsIgnoreCase(status)) {
+        if (o == null) return false;
+        applyStatus(o, status);
+        repo.update(o);
+        return true;
+    }
+
+    public boolean updateStatusByOwner(String orderId, String ownerId, java.util.Collection<String> ownerRestaurantIds, String status) {
+        Order o = repo.findById(orderId);
+        if (o == null || ownerId == null || ownerRestaurantIds == null || !ownerRestaurantIds.contains(o.getRestaurantId())) return false;
+        String next = normalizeStatus(status);
+        if ("OUT_FOR_DELIVERY".equals(next) || "DELIVERED".equals(next)) return false;
+        if (!isOwnerStatusAllowed(o.getStatus(), next)) return false;
+        applyStatus(o, next);
+        repo.update(o);
+        return true;
+    }
+
+    public boolean updateStatusByRider(String orderId, String riderId, String status) {
+        Order o = repo.findById(orderId);
+        if (o == null || riderId == null || !riderId.equals(o.getRiderId())) return false;
+        String next = normalizeStatus(status);
+        if (!("OUT_FOR_DELIVERY".equals(next) || "DELIVERED".equals(next))) return false;
+        if (!isRiderStatusAllowed(o.getStatus(), next)) return false;
+        applyStatus(o, next);
+        repo.update(o);
+        return true;
+    }
+
+    private void applyStatus(Order o, String status) {
+        String next = normalizeStatus(status);
+        o.setStatus(next);
+        // Re-compute rider payout snapshot and save completion date/time when delivered.
+        if ("DELIVERED".equalsIgnoreCase(next)) {
             o.setRiderWebsiteFee(settingsService.riderWebsiteFee(o.getDeliveryFee()));
             o.setRiderEarning(settingsService.riderEarning(o.getDeliveryFee()));
+            if (o.getCompletedAt() == null || o.getCompletedAt().isBlank()) {
+                o.setCompletedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            }
         }
-        repo.update(o);
+    }
+
+    private String normalizeStatus(String status) {
+        return status == null ? "" : status.trim().toUpperCase();
+    }
+
+    private boolean isOwnerStatusAllowed(String current, String next) {
+        String cur = normalizeStatus(current);
+        if (cur.isBlank()) cur = "PENDING";
+        if ("CANCELLED".equals(next)) return "PENDING".equals(cur);
+        if ("DELIVERED".equals(cur) || "CANCELLED".equals(cur)) return false;
+        if (!"PENDING".equals(next) && !"PREPARING".equals(next)) return false;
+        java.util.Map<String,Integer> rank = java.util.Map.of("PENDING", 0, "PREPARING", 1);
+        Integer cr = rank.get(cur);
+        Integer nr = rank.get(next);
+        return cr != null && nr != null && nr >= cr;
+    }
+
+    private boolean isRiderStatusAllowed(String current, String next) {
+        String cur = normalizeStatus(current);
+        if ("DELIVERED".equals(cur) || "CANCELLED".equals(cur)) return false;
+        java.util.Map<String,Integer> rank = java.util.Map.of("PREPARING", 1, "OUT_FOR_DELIVERY", 2, "DELIVERED", 3);
+        Integer cr = rank.get(cur);
+        Integer nr = rank.get(next);
+        return cr != null && nr != null && nr >= cr;
     }
 
     public void assignRider(String orderId, String riderId) {
         Order o = repo.findById(orderId);
         if (o == null) return;
         o.setRiderId(riderId);
-        if ("PENDING".equals(o.getStatus())) o.setStatus("OUT_FOR_DELIVERY");
+        if ("PENDING".equals(o.getStatus())) o.setStatus("PREPARING");
         repo.update(o);
     }
 
@@ -150,7 +206,7 @@ public class OrderService {
         String today = LocalDate.now().toString();
         return byRider(riderId).stream()
                 .filter(o -> "DELIVERED".equals(o.getStatus()))
-                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().startsWith(today))
+                .filter(o -> o.getDisplayCompletedAt() != null && o.getDisplayCompletedAt().startsWith(today))
                 .mapToDouble(o -> riderEarn(o, settingsService))
                 .sum();
     }
@@ -158,7 +214,7 @@ public class OrderService {
         String month = LocalDate.now().toString().substring(0, 7); // yyyy-MM
         return byRider(riderId).stream()
                 .filter(o -> "DELIVERED".equals(o.getStatus()))
-                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().startsWith(month))
+                .filter(o -> o.getDisplayCompletedAt() != null && o.getDisplayCompletedAt().startsWith(month))
                 .mapToDouble(o -> riderEarn(o, settingsService))
                 .sum();
     }
@@ -174,7 +230,7 @@ public class OrderService {
         return all().stream()
                 .filter(o -> "DELIVERED".equalsIgnoreCase(o.getStatus()))
                 .filter(o -> restaurantIds.contains(o.getRestaurantId()))
-                .filter(o -> dateOrMonthPrefix == null || (o.getCreatedAt() != null && o.getCreatedAt().startsWith(dateOrMonthPrefix)))
+                .filter(o -> dateOrMonthPrefix == null || (o.getDisplayCompletedAt() != null && o.getDisplayCompletedAt().startsWith(dateOrMonthPrefix)))
                 .mapToDouble(Order::getFoodCost)
                 .sum();
     }

@@ -99,6 +99,16 @@
             color:#000;
         }
 
+
+        /* FIX: keep native dropdown option text readable on glass/dark pages */
+        select option,
+        .form-select option,
+        .form-control option{
+            background:#ffffff !important;
+            color:#111111 !important;
+            text-shadow:none !important;
+        }
+
         /* FOOTER */
         footer{
             background:#070707;
@@ -178,6 +188,13 @@
         .no-key-google-map{width:100%;height:100%;border:0;border-radius:14px;display:block;}
         .no-key-map-note{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(255,255,255,.92);color:#333;border-radius:12px;padding:10px 12px;font-size:.85rem;box-shadow:0 6px 18px rgba(0,0,0,.12);}
 
+        @media (max-width: 991.98px){
+            .navbar-collapse{padding-top:1rem;}
+            .navbar-nav{align-items:stretch !important;}
+            .navbar .btn{width:100%; margin-top:.35rem;}
+            .dropdown-menu{width:100%;}
+        }
+
     </style>
 
 </head>
@@ -209,6 +226,10 @@
 
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/foods}">Browse Foods</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/restaurants}">Browse Restaurants</a>
                 </li>
 
                 <!-- cart moved to right side as a prominent button -->

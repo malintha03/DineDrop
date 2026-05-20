@@ -145,8 +145,9 @@
 
     /* FIX: Unreadable dropdown options */
     select.form-control option {
-      background-color: #1a1a1a;
-      color: white;
+      background-color: #ffffff !important;
+      color: #111111 !important;
+      text-shadow: none !important;
     }
 
     .form-control:focus {
@@ -298,10 +299,13 @@
           </div>
         </div>
 
-        <!-- CITY (DYNAMIC) -->
+        <!-- DISTRICT / CITY (DYNAMIC) -->
         <div class="mb-3 extra-field" id="city-group">
-          <label class="form-label" id="city-label">City</label>
-          <input class="form-control" name="city" id="city-input">
+          <label class="form-label" id="city-label">District</label>
+          <select class="form-control" name="city" id="city-input">
+            <option value="">Select district</option>
+            <option th:each="d : ${districts}" th:value="${d}" th:text="${d}"></option>
+          </select>
         </div>
 
         <!-- RIDER VERIFICATION NOTICE -->
@@ -396,16 +400,20 @@
     licenseInput.required = false;
     plateInput.required = false;
 
-    if (role === 'OWNER') {
+    if (role === 'CUSTOMER') {
       cityGroup.style.display = 'block';
-      cityLabel.innerText = 'Restaurant City';
+      cityLabel.innerText = 'Current District';
+      cityInput.required = true;
+    } else if (role === 'OWNER') {
+      cityGroup.style.display = 'block';
+      cityLabel.innerText = 'Restaurant District';
       cityInput.required = true;
     } else if (role === 'RIDER') {
       cityGroup.style.display = 'block';
       riderAlert.style.display = 'block';
       vehicleGroup.style.display = 'block';
       riderIdRow.style.display = 'flex';
-      cityLabel.innerText = 'Service City';
+      cityLabel.innerText = 'Service District';
       cityInput.required = true;
       vehicleInput.required = true;
       licenseInput.required = true;

@@ -694,8 +694,7 @@
                         <select class="form-select form-select-sm" name="status">
                             <option th:if="${o.status == 'PENDING'}">PENDING</option>
                             <option th:if="${o.status == 'PENDING' or o.status == 'PREPARING'}">PREPARING</option>
-                            <option th:if="${o.status == 'PENDING' or o.status == 'PREPARING' or o.status == 'OUT_FOR_DELIVERY'}">OUT_FOR_DELIVERY</option>
-                            <option>DELIVERED</option>
+                            <!-- Owners cannot set delivery-side statuses. Only riders can mark OUT_FOR_DELIVERY or DELIVERED. -->
                             <option th:if="${o.status == 'PENDING'}">CANCELLED</option>
                         </select>
                         <button class="btn btn-sm btn-brand">Set</button>
@@ -727,6 +726,7 @@
                 <th>Address</th>
                 <th>Total</th>
                 <th>Status</th>
+                <th>Completed At</th>
                 <th>Customer Review</th>
             </tr>
             </thead>
@@ -737,6 +737,7 @@
                 <td><small th:text="${o.address} + ', ' + ${o.city}"></small></td>
                 <td>Rs. <span th:text="${#numbers.formatDecimal(o.total,1,2)}"></span></td>
                 <td><span class="status status-DELIVERED">DELIVERED</span></td>
+                <td><small th:text="${o.displayCompletedAt}"></small></td>
                 <td th:with="rv=${reviewByOrder != null ? reviewByOrder.get(o.id) : null}">
                     <div th:if="${rv != null}">
                         <span th:text="'⭐ ' + ${rv.rating} + '/5'" style="font-weight:600;"></span><br>

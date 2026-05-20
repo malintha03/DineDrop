@@ -419,6 +419,7 @@
       <tr>
         <th>ID</th>
         <th>Restaurant</th>
+        <th>Restaurant Contact</th>
         <th>Customer & Address</th>
         <th>Route</th>
         <th>Fee</th>
@@ -436,6 +437,14 @@
         <td th:text="${restaurantService.byId(o.restaurantId) != null}
                     ? ${restaurantService.byId(o.restaurantId).name}
                     : ''">
+        </td>
+
+        <td th:with="res=${restaurantService.byId(o.restaurantId)}">
+          <small th:if="${res != null}">
+            📞 <span th:text="${userRepository.findById(res.ownerId) != null ? userRepository.findById(res.ownerId).phone : 'N/A'}"></span><br>
+            📍 <span th:text="${res.address}"></span>
+          </small>
+          <small th:if="${res == null}">N/A</small>
         </td>
 
         <td>
@@ -522,6 +531,7 @@
       <tr>
         <th>ID</th>
         <th>Customer</th>
+        <th>Restaurant Contact</th>
         <th>Items</th>
         <th>Route</th>
         <th>Total</th>
@@ -546,6 +556,14 @@
             </div>
             <small th:text="'📍 ' + ${o.address} + ', ' + ${o.city}"></small>
           </div>
+        </td>
+
+        <td th:with="res=${restaurantService.byId(o.restaurantId)}">
+          <small th:if="${res != null}">
+            📞 <span th:text="${userRepository.findById(res.ownerId) != null ? userRepository.findById(res.ownerId).phone : 'N/A'}"></span><br>
+            📍 <span th:text="${res.address}"></span>
+          </small>
+          <small th:if="${res == null}">N/A</small>
         </td>
 
         <td>
@@ -661,6 +679,7 @@
         <th>Delivery Fee</th>
         <th>Website Commission</th>
         <th>You Earned</th>
+        <th>Completed At</th>
         <th>Status</th>
       </tr>
 
@@ -671,6 +690,14 @@
       <tr th:each="o : ${completed}">
 
         <td th:text="${o.id}"></td>
+
+        <td th:with="res=${restaurantService.byId(o.restaurantId)}">
+          <small th:if="${res != null}">
+            📞 <span th:text="${userRepository.findById(res.ownerId) != null ? userRepository.findById(res.ownerId).phone : 'N/A'}"></span><br>
+            📍 <span th:text="${res.address}"></span>
+          </small>
+          <small th:if="${res == null}">N/A</small>
+        </td>
 
         <td>
           <small th:text="${o.items}"></small>
@@ -697,6 +724,8 @@
             <span th:text="${#numbers.formatDecimal(o.riderEarning,1,2)}"></span>
           </strong>
         </td>
+
+        <td><small th:text="${o.displayCompletedAt}"></small></td>
 
         <td>
                     <span class="status status-DELIVERED">
